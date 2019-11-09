@@ -12,10 +12,12 @@ public class User {
     private boolean hasNewScene;
 
     public User() {
+        this.hasNewScene = false;
     }
 
     public User(String username){
         this.username = username;
+        this.hasNewScene = false;
     }
 
     public String getUsername() {
@@ -43,6 +45,7 @@ public class User {
     }
 
     public Scene getCurrentScene() {
+        this.hasNewScene = false;
         return currentScene;
     }
 
@@ -60,10 +63,10 @@ public class User {
     }
 
     public void clearSession(){
-        this.currentChoice = null;
         this.currentScene = null;
         this.currentSession = null;
         this.hasNewScene = false;
+        this.currentChoice = null;
     }
 
     public boolean hasNewScene() {

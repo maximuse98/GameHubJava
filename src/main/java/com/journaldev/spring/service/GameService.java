@@ -13,9 +13,9 @@ public interface GameService {
 	void updateGame(Game p);
 	List<Game> listGames();
 	List<GameView> getGameViews();
-	Game getGameById(int id);
+	Game getGame(int id);
 	void removeGame(int id);
 	void removeGame(Game game);
-	Choice getChoiceById(int id);
-	MatrixVariant getVariantByPosition(String matrixPosition);
+	Choice getChoice(int id);
+	MatrixVariant getVariant(String matrixPosition);
 }

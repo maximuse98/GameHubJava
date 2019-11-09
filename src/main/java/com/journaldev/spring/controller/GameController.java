@@ -4,9 +4,10 @@ import com.journaldev.spring.model.Game;
 import com.journaldev.spring.service.GameParserService;
 import com.journaldev.spring.view.SceneView;
 import com.journaldev.spring.model.User;
-
 import com.journaldev.spring.service.UserService;
 import com.journaldev.spring.view.UserView;
+import com.journaldev.spring.service.GameService;
+
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import com.journaldev.spring.service.GameService;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -55,19 +55,15 @@ public class GameController {
 
 	@RequestMapping(value = "/games", method = RequestMethod.POST)
 	public String register(@ModelAttribute User user){
-		User findUser = this.userService.findUserByUsername(user.getUsername());
-		if(findUser != null) {
-			return "redirect:/register";
-		}
 		userService.createUser(user);
 		return "redirect:/games/" + user.getUsername();
 	}
 
 	@RequestMapping(value = "/games/{username}", method = RequestMethod.GET)
 	public String backToGames(@PathVariable("username") String username, Model model){
-		User user = this.userService.findUserByUsername(username);
+		User user = this.userService.getUser(username);
 
-		userService.deleteSession(user);
+		userService.leaveSession(user);
 
 		model.addAttribute("user", new UserView(user));
 		model.addAttribute("game", new Game());
@@ -76,38 +72,34 @@ public class GameController {
 		model.addAttribute("listSessions",userService.getSessionViews());
 		model.addAttribute("listUsers", userService.getUserViews());
 
-		return "game";
+        return "game";
 	}
 	
 	@RequestMapping(value = "/game/{username}/{gameId}", method = RequestMethod.GET)
     public String startNewSession(@PathVariable("gameId") int id, @PathVariable("username") String username, Model model){
-		Game game = this.gameService.getGameById(id);
-		User user = this.userService.findUserByUsername(username);
+		Game game = this.gameService.getGame(id);
+		User user = this.userService.getUser(username);
 
-		if (user != null) {
-			if(user.getCurrentSession()==null){
-				userService.createSession(user, game);
-			}
+		if (user == null) {
+            return "redirect:/register";
+        }
 
-			model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-			model.addAttribute("username", user.getUsername());
-			model.addAttribute("gameName", game.getName());
-
-			return "session";
+		if(user.getCurrentSession()==null){
+		    userService.createSession(user, game);
 		}
-		return "redirect:/register";
+
+		model.addAttribute("scene", new SceneView(user.getCurrentScene()));
+		model.addAttribute("username", user.getUsername());
+		model.addAttribute("gameName", game.getName());
+
+		return "session";
     }
 
     @RequestMapping(value = "/leave/{username}", method = RequestMethod.GET)
     public String leaveSession(@PathVariable("username") String username){
-        User user = this.userService.findUserByUsername(username);
-        GameSession currentSession = user.getCurrentSession();
+        User user = this.userService.getUser(username);
+        userService.leaveSession(user);
 
-        if (currentSession.getUsersCount() == 1){
-        	userService.deleteSession(user);
-		} else{
-			currentSession.removeUser(user);
-		}
         return "redirect:/games/"+username;
     }
 
@@ -119,28 +111,33 @@ public class GameController {
 
 	@RequestMapping(value = "/connect/{username}/{sessionId}", method = RequestMethod.GET)
 	public String addUserToSession(@PathVariable("sessionId") int sessionId, @PathVariable("username") String username){
-		User user = userService.findUserByUsername(username);
-		GameSession session = userService.findSessionById(sessionId);
-		if (user != null) {
-			userService.addUserToSession(user, session);
-			return "redirect:/game/"+username+"/"+session.getGame().getId();
-		}
-		return "redirect:/register";
+		User user = userService.getUser(username);
+        if (user == null) {
+            return "redirect:/register";
+        }
+		GameSession session = userService.getSession(sessionId);
+        if(session.getGameSize()<=session.getUsersCount()){
+            return "redirect:/games/{username}";
+        }
+        userService.addUserToSession(user, session);
+        return "redirect:/game/"+username+"/"+session.getGame().getId();
 	}
 
 	@RequestMapping(value = "/send/{username}/{choiceId}", method = RequestMethod.GET)
 	public String sendAnswer(@PathVariable("choiceId") int choiceId, @PathVariable("username") String username) throws ExecutionException, InterruptedException {
-		User user = userService.findUserByUsername(username);
+		User user = userService.getUser(username);
 		if (user == null) {
 			return "redirect:/register";
 		}
-		System.out.println("Invoking an asynchronous method. " + Thread.currentThread().getName());
-
+		if(user.getCurrentSession() == null){
+            return "redirect:/games/{username}";
+        }
+		//System.out.println("Invoking an asynchronous method. " + Thread.currentThread().getName());
 		Future<String> future = this.asyncMethodWithReturnType(user,choiceId);
 
 		while (true) {
 			if (future.isDone()) {
-				System.out.println("Result from asynchronous process - " + future.get());
+				//System.out.println("Result from asynchronous process - " + future.get());
 				return future.get();
 			}
 		}
@@ -180,22 +177,21 @@ public class GameController {
 	@Async
 	public Future<String> asyncMethodWithReturnType(User user, int choiceId) {
 		GameSession currentSession = user.getCurrentSession();
-		if (currentSession != null) {
-			currentSession.addChoice(user, choiceId);
-		} else{
-			return new AsyncResult<>("redirect:/games/{username}");
-		}
+		currentSession.addChoice(user, choiceId);
 
-		System.out.println("Execute method asynchronously - " + Thread.currentThread().getName());
+		//System.out.println("Execute method asynchronously - " + Thread.currentThread().getName());
 		try {
 			while(!user.hasNewScene()){
+			    if(user.getCurrentSession() == null){
+			        return new AsyncResult<>(null);
+                }
 				Thread.sleep(1000);
 			}
-			System.out.println("Finish method - " + Thread.currentThread().getName());
+			//System.out.println("Finish method - " + Thread.currentThread().getName());
 			return new AsyncResult<>("redirect:/game/"+user.getUsername()+"/"+currentSession.getGame().getId());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-			return null;
+            return new AsyncResult<>(null);
 		}
 	}
 }

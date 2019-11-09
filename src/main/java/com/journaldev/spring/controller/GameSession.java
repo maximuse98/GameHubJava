@@ -58,9 +58,12 @@ public class GameSession {
     }
 
     public void removeUser(User user){
-        user.clearSession();
+        if(user.getCurrentChoice()!=null){
+            answeredUsers--;
+        }
         users.remove(user);
         usersCount--;
+        user.clearSession();
     }
 
     public void addChoice(User user, int choiceId){

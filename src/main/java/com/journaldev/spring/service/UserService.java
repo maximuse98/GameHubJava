@@ -12,23 +12,23 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserService {
-    public void createUser(User user);
-    public void deleteUser(User user);
+    void createUser(User user);
+    void deleteUser(User user);
 
-    public ResponseEntity<byte[]> getUserBackground(String username) throws SQLException;
-    public ResponseEntity<byte[]> getUserSprite(String username, int spriteId) throws SQLException;
+    ResponseEntity<byte[]> getUserBackground(String username) throws SQLException;
+    ResponseEntity<byte[]> getUserSprite(String username, int spriteId) throws SQLException;
 
-    public void createSession(User creator, Game game);
-    public void addUserToSession(User user, GameSession gameSession);
-    public void deleteSession(User user);
-    public void removeUser(String username);
+    void createSession(User creator, Game game);
+    void addUserToSession(User user, GameSession gameSession);
+    void leaveSession(User user);
+    void removeUser(String username);
 
-    public User findUserByUsername(String username);
-    public Blob findImageBySpriteId(int id, String username);
-    public GameSession findSessionById(int id);
+    User getUser(String username);
+    Blob getImage(int id, String username);
+    GameSession getSession(int id);
 
-    public List<User> getUsers();
-    public List<UserView> getUserViews();
-    public List<GameSession> getSessions();
-    public List<SessionView> getSessionViews();
+    List<User> getUsers();
+    List<UserView> getUserViews();
+    List<GameSession> getSessions();
+    List<SessionView> getSessionViews();
 }

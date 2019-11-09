@@ -52,7 +52,7 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	@Transactional
-	public Game getGameById(int id) {
+	public Game getGame(int id) {
 		return this.gameDAO.getGameById(id);
 	}
 
@@ -70,13 +70,13 @@ public class GameServiceImpl implements GameService {
 
 	@Override
 	@Transactional
-    public Choice getChoiceById(int id) {
+    public Choice getChoice(int id) {
         return this.gameDAO.getChoiceById(id);
     }
 
     @Override
 	@Transactional
-    public MatrixVariant getVariantByPosition(String matrixPosition) {
+    public MatrixVariant getVariant(String matrixPosition) {
         return this.gameDAO.getVariantByPosition(matrixPosition);
     }
 }
