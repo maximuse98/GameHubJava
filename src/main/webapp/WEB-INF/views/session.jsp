@@ -41,7 +41,7 @@
         <button onclick="location.href='${userUrl}'">${choice.caption}</button>
     </c:forEach>
     <c:if test="${scene.type == 'Result'}">
-        <spring:url value="/games/${username}" var="exit" />
+        <spring:url value="/leave/${username}" var="exit" />
         <button onclick="location.href='${exit}'">End game</button>
     </c:if>
     <br>

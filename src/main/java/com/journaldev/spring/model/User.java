@@ -1,6 +1,8 @@
 package com.journaldev.spring.model;
 
 import com.journaldev.spring.controller.GameSession;
+import com.journaldev.spring.exception.ExceptionType;
+import com.journaldev.spring.exception.NotFoundException;
 
 public class User {
     private String username;
@@ -36,7 +38,10 @@ public class User {
         this.password = password;
     }
 
-    public GameSession getCurrentSession() {
+    public GameSession getCurrentSession() throws NotFoundException {
+        if(currentSession == null){
+            throw new NotFoundException(ExceptionType.SESSION);
+        }
         return currentSession;
     }
 

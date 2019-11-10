@@ -1,5 +1,6 @@
 package com.journaldev.spring.view;
 
+import com.journaldev.spring.exception.NotFoundException;
 import com.journaldev.spring.model.User;
 
 public class UserView {
@@ -10,7 +11,7 @@ public class UserView {
         this.username = user.getUsername();
         try {
             this.currentGameName = user.getCurrentSession().getGame().getName();
-        }catch (NullPointerException e){
+        }catch (NullPointerException | NotFoundException e){
             this.currentGameName = null;
         }
     }
