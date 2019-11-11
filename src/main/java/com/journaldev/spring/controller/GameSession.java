@@ -35,6 +35,7 @@ public class GameSession {
     private int gameSize;
     private int answeredUsers;
     private User creator;
+    private int exitUsersCount;
 
     private List<User> users = new LinkedList<User>();
 
@@ -42,6 +43,7 @@ public class GameSession {
         this.id = this.hashCode();
         this.game = game;
         this.usersCount = 1;
+        this.exitUsersCount = 0;
         this.creator = user;
         users.add(user);
 
@@ -139,5 +141,13 @@ public class GameSession {
 
     public int getId() {
         return id;
+    }
+
+    public int getExitUsersCount() {
+        return exitUsersCount;
+    }
+
+    public void setExitUsersCount(int exitUsersCount) {
+        this.exitUsersCount = exitUsersCount;
     }
 }

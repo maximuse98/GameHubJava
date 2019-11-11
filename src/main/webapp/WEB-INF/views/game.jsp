@@ -20,7 +20,7 @@
         .horizontal { display: inline;}
     </style>
 </head>
-
+<body>
     <h1>
         Gamehub v0.5
     </h1>
@@ -63,7 +63,7 @@
                         <td>${game.name}</td>
                         <td>${game.playersCount}</td>
                         <td>
-                            <spring:url value="/game/${user.username}/${game.id}" var="userUrl" />
+                            <spring:url value="/start/${user.username}/${game.id}" var="userUrl" />
                             <button onclick="location.href='${userUrl}'">Start</button>
                         </td>
                     </tr>

@@ -16,7 +16,7 @@ public class SessionView {
         this.gameName = game.getName();
         this.creatorUsername = gameSession.getCreator().getUsername();
         this.gameSize = game.getPlayersCount();
-        this.usersCount = gameSession.getUsersCount();
+        this.usersCount = gameSession.getUsersCount() + gameSession.getExitUsersCount();
     }
 
     public int getId() {

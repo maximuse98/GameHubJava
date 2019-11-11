@@ -74,14 +74,12 @@ public class GameDAOImpl implements GameDAO {
     @Override
 	public Choice getChoiceById(int id) {
 		Session session = this.sessionFactory.getCurrentSession();
-		Choice p = (Choice) session.load(Choice.class, id);
-		return p;
+		return (Choice) session.load(Choice.class, id);
 	}
 
 	@Override
 	public MatrixVariant getVariantByPosition(String position) {
 		Session session = this.sessionFactory.getCurrentSession();
-		MatrixVariant result = (MatrixVariant) session.createQuery("from MatrixVariant where matrixPosition=position").list();
-		return result;
+		return (MatrixVariant) session.createQuery("from MatrixVariant where matrixPosition=position").list();
 	}
 }

@@ -27,8 +27,8 @@
 	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<beans:property name="driverClassName" value="com.mysql.cj.jdbc.Driver" />
 		<beans:property name="url" value="jdbc:mysql://localhost:3306/gamehub?serverTimezone=UTC&amp;useSSL=False" />
-		<beans:property name="username" value="" />
-		<beans:property name="password" value="" />
+		<beans:property name="username" value="root" />
+		<beans:property name="password" value="3228" />
 	</beans:bean>
 
 	<!-- Hibernate 4 SessionFactory Bean definition -->

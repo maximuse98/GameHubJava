@@ -1,7 +1,6 @@
 package com.journaldev.spring.service;
 
 import com.journaldev.spring.controller.GameSession;
-import com.journaldev.spring.dao.GameDAOImpl;
 import com.journaldev.spring.exception.ExceptionType;
 import com.journaldev.spring.exception.NotFoundException;
 import com.journaldev.spring.model.Game;
@@ -10,8 +9,7 @@ import com.journaldev.spring.model.Sprite;
 import com.journaldev.spring.view.SessionView;
 import com.journaldev.spring.model.User;
 import com.journaldev.spring.view.UserView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -99,7 +97,10 @@ public class UserServiceImpl implements UserService {
     public void leaveSession(String username) throws NotFoundException {
         User user = this.getUser(username);
         GameSession currentSession = user.getCurrentSession();
-        if(currentSession.getUsersCount() == 1){
+        if (user.getCurrentScene().getType().equals("Result")){
+            currentSession.setExitUsersCount(currentSession.getExitUsersCount()+1);
+        }
+        if(currentSession.getUsersCount() - currentSession.getExitUsersCount() == 1){
             user.clearSession();
             sessions.remove(currentSession);
         } else{

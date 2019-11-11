@@ -88,23 +88,33 @@ public class GameController {
         return "game";
 	}
 	
-	@RequestMapping(value = "/game/{username}/{gameId}", method = RequestMethod.GET)
-    public String startNewSession(@PathVariable("gameId") int id, @PathVariable("username") String username, Model model){
-		Game game = this.gameService.getGame(id);
-
-		User user;
+	@RequestMapping(value = "/start/{username}/{gameId}", method = RequestMethod.GET)
+    public String startNewSession(@PathVariable("gameId") int id, @PathVariable("username") String username){
+		Game game = gameService.getGame(id);
 		try {
 			userService.createSession(username, game);
-			user = userService.getUser(username);
 		} catch (NotFoundException e) {
 			return handleException(e.getType());
 		}
+		return "redirect:/game/{username}";
+    }
 
-		model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-		model.addAttribute("username", user.getUsername());
-		model.addAttribute("gameName", game.getName());
+    @RequestMapping(value = "/game/{username}", method = RequestMethod.GET)
+    public String getScene(@PathVariable("username") String username, Model model){
+        User user;
+        Game game;
+        try {
+            user = userService.getUser(username);
+            game = user.getCurrentSession().getGame();
+        } catch (NotFoundException e) {
+            return handleException(e.getType());
+        }
 
-		return "session";
+        model.addAttribute("scene", new SceneView(user.getCurrentScene()));
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("gameName", game.getName());
+
+        return "session";
     }
 
     @RequestMapping(value = "/leave/{username}", method = RequestMethod.GET)
@@ -128,11 +138,9 @@ public class GameController {
     }
 
 	@RequestMapping(value = "/connect/{username}/{sessionId}", method = RequestMethod.GET)
-	public String addUserToSession(@PathVariable("sessionId") int sessionId, @PathVariable("username") String username, Model model){
+	public String addUserToSession(@PathVariable("sessionId") int sessionId, @PathVariable("username") String username){
 		GameSession session;
-		User user;
 		try {
-			user = userService.getUser(username);
 			session = userService.getSession(sessionId);
 			if(session.getGameSize()<=session.getUsersCount()){
 				return "redirect:/games/{username}";
@@ -141,14 +149,11 @@ public class GameController {
 		} catch (NotFoundException e) {
 			return handleException(e.getType());
 		}
-		model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-		model.addAttribute("username", user.getUsername());
-		model.addAttribute("gameName", session.getGame().getName());
-        return "session";
+        return "redirect:/game/{username}";
 	}
 
 	@RequestMapping(value = "/send/{username}/{choiceId}", method = RequestMethod.GET)
-	public String sendAnswer(@PathVariable("choiceId") int choiceId, @PathVariable("username") String username, Model model) throws ExecutionException, InterruptedException {
+	public String sendAnswer(@PathVariable("choiceId") int choiceId, @PathVariable("username") String username) throws ExecutionException, InterruptedException {
 		User user;
 		GameSession currentSession;
 		try {
@@ -166,10 +171,7 @@ public class GameController {
 		while (true) {
 			if (future.isDone()) {
 				//System.out.println("Result from asynchronous process - " + future.get());
-				model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-				model.addAttribute("username", user.getUsername());
-				model.addAttribute("gameName", currentSession.getGame().getName());
-				return future.get();
+                return future.get();
 			}
 		}
 	}
@@ -224,7 +226,7 @@ public class GameController {
 				Thread.sleep(1000);
 			}
 			//System.out.println("Finish method - " + Thread.currentThread().getName());
-			return new AsyncResult<>("session");
+			return new AsyncResult<>("redirect:/game/{username}");
 		} catch (InterruptedException e) {
 			e.printStackTrace();
             return new AsyncResult<>(null);
