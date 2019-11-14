@@ -27,7 +27,7 @@ public class GameParserServiceImpl implements GameParserService {
     @Override
     public void parse(MultipartFile gameFile, MultipartFile[] images) throws IOException, SQLException, ParseException {
         InputStream inputStream = gameFile.getInputStream();
-        inputStream.skip(3);
+        //inputStream.skip(3);
 
         JSONParser jsonParser = new JSONParser();
         JSONObject jsonObject = (JSONObject) jsonParser.parse(new InputStreamReader(inputStream, StandardCharsets.UTF_8));

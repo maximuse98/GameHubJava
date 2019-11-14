@@ -11,6 +11,7 @@ import com.journaldev.spring.view.UserView;
 import com.journaldev.spring.service.GameService;
 
 import org.json.simple.parser.ParseException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -20,7 +21,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
@@ -56,21 +56,13 @@ public class GameController {
 	}
 
 	@RequestMapping(value = "/games", method = RequestMethod.POST)
-	public String register(@ModelAttribute User user, Model model){
+	public String register(@ModelAttribute User user){
 		userService.createUser(user);
-
-		model.addAttribute("user", new UserView(user));
-		model.addAttribute("game", new Game());
-
-		model.addAttribute("listGames", gameService.getGameViews());
-		model.addAttribute("listSessions",userService.getSessionViews());
-		model.addAttribute("listUsers", userService.getUserViews());
-
-		return "game";
+		return "redirect:/games/"+user.getUsername();
 	}
 
 	@RequestMapping(value = "/games/{username}", method = RequestMethod.GET)
-	public String backToGames(@PathVariable("username") String username, Model model){
+	public String getGames(@PathVariable("username") String username, Model model){
 		User user;
 		try {
 			user = this.userService.getUser(username);

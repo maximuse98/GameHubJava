@@ -17,6 +17,7 @@
 		<org.slf4j-version>1.7.5</org.slf4j-version>
 		<hibernate.version>4.3.5.Final</hibernate.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.security.version>5.2.0.RELEASE</spring.security.version>
 	</properties>
 
 	<dependencies>
@@ -145,10 +146,7 @@
             <version>20190722</version>
         </dependency>
 
-
-
         <!-- Servlet -->
-		<!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -175,7 +173,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<!-- MySQL Driver -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
