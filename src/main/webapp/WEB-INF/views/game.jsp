@@ -21,14 +21,26 @@
     </style>
 </head>
 <body>
-    <h1>
-        Gamehub v0.5
-    </h1>
+    <h1>Gamehub</h1>
+
+    <c:if test="${logout}">
+        <script type="text/javascript">
+            window.onload = performLogout;
+            function performLogout() {
+                document.forms[0].submit();
+            }
+        </script>
+        <c:url value="/j_spring_security_logout" var="exitURL"/>
+        <form:form action="${exitURL}" method="post"/>
+        <!--<redirect url="/j_spring_security_logout"/>-->
+    </c:if>
 
     <div style="position: absolute; top: 20px; right: 20px; width: 250px; text-align:right;">
-        <spring:url value="/exit/${user.username}" var="userUrl" />
-        <button onclick="location.href='${userUrl}'">Exit</button>
-        Current user: ${user.username}
+        <c:url value="/exit" var="logoutUrl"/>
+        <form:form action="${logoutUrl}" method="post">
+            <button type="submit">Exit</button>
+            Current user: ${pageContext.request.userPrincipal.name}
+        </form:form>
     </div>
 
     <c:if test="${!empty listUsers}">
@@ -63,7 +75,7 @@
                         <td>${game.name}</td>
                         <td>${game.playersCount}</td>
                         <td>
-                            <spring:url value="/start/${user.username}/${game.id}" var="userUrl" />
+                            <spring:url value="/start/${game.id}" var="userUrl" />
                             <button onclick="location.href='${userUrl}'">Start</button>
                         </td>
                     </tr>
@@ -86,7 +98,7 @@
                         <td>${session.usersCount}</td>
                         <c:if test="${session.usersCount<session.gameSize}">
                             <td>
-                                <spring:url value="/connect/${user.username}/${session.id}" var="connect" />
+                                <spring:url value="/connect/${session.id}" var="connect" />
                                 <button onclick="location.href='${connect}'">Connect</button>
                             </td>
                         </c:if>

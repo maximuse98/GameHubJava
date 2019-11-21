@@ -5,7 +5,6 @@
   Time: 12:17
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -26,9 +25,9 @@
     </h1>
 
     <div style="position: absolute; top: 20px; right: 20px; width: 250px; text-align:right;">
-        <spring:url value="/leave/${username}" var="userUrl" />
+        <spring:url value="/leave" var="userUrl" />
         <button onclick="location.href='${userUrl}'">Leave</button>
-        Current user: ${username}
+        Current user: ${pageContext.request.userPrincipal.name}
     </div>
 
     <c:forEach items="${scene.phrases}" var="phrase">
@@ -37,18 +36,18 @@
 
     <br>
     <c:forEach items="${scene.choices}" var="choice">
-        <spring:url value="/send/${username}/${choice.id}" var="userUrl" />
+        <spring:url value="/send/${choice.id}" var="userUrl" />
         <button onclick="location.href='${userUrl}'">${choice.caption}</button>
     </c:forEach>
     <c:if test="${scene.type == 'Result'}">
-        <spring:url value="/leave/${username}" var="exit" />
+        <spring:url value="/leave" var="exit" />
         <button onclick="location.href='${exit}'">End game</button>
     </c:if>
     <br>
 
     <c:forEach items="${scene.sprites}" var="sprite">
-        <img src="/image/sprite/${username}/${sprite.id}" alt="image"/>
+        <img src="/image/sprite/${sprite.id}" alt="image"/>
     </c:forEach>
-    <img src="/image/background/${username}" alt="image"/>
+    <img src="/image/background" alt="image"/>
 </body>
 </html>

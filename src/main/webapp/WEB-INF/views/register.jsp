@@ -9,38 +9,38 @@
   Time: 17:30
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>GameHub</title>
-    <h1>Register</h1>
 </head>
 
-<c:url var="register" value="/games" />
+<c:url var="register" value="/register" />
 
 <body>
+
 <form:form action="${register}" commandName="user" method="POST">
+    <h1>Register</h1>
     <table>
         <tr>
             <td>
-                <form:label path="username">
-                    <spring:message text="Username"/>
+                <form:label path="login">
+                    <spring:message text="Login:"/>
                 </form:label>
             </td>
             <td>
-                <form:input path="username" />
+                <form:input path="login" />
             </td>
         </tr>
-        <!--<tr>
+        <tr>
             <td>
                 <form:label path="password">
-                    <spring:message text="Password"/>
+                    <spring:message text="Password:"/>
                 </form:label>
             </td>
             <td>
-                <form:input path="password" />
+                <form:password path="password" />
             </td>
-        </tr>-->
+        </tr>
         <tr>
             <td colspan="2">
                 <input type="submit" value="<spring:message text="Register"/>" />
@@ -48,5 +48,6 @@
         </tr>
     </table>
 </form:form>
+
 </body>
 </html>
