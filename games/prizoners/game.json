@@ -1,0 +1,68 @@
+{
+    "Name": "Дилема заключенного",
+    "PlayersCount": 2,
+    "StartSceneId1": 1,
+    "StartSceneId2": 1,
+    "ImageResources": [
+        { "Id": 1, "Path": "Interrogation_Room.jpg" },
+        { "Id": 2, "Path": "inspector.png" }
+    ],
+    "Scenes": [
+        {
+            "Id": 1,
+            "BackgroundId": 1,
+            "Text": "Следователь|Вас поймали на угоне машины, но я знаю что это вы обокрали банк|Следователь|Твой дружок уже во всю дает против тебя показания - тебе светит 10 лет. Но мы ведь знаем, что ты не виноват|Следователь|Давай так - ты сдаешь подельника, а мы тебя отпускаем. Что скажешь?",
+            "Type": "Normal",
+            "WaitForOthers": true,
+            "Sprites": [
+                { "ResourceId": 2, "PositionX": 30, "PositionY": 30 }
+            ],
+            "Choices": [
+                { "Caption": "Молчать", "MatrixNum": 1 },
+                { "Caption": "Сдать напарника", "MatrixNum": 2}
+            ],
+            "ChoiceMatrix": [
+                { "MatrixPosition": "1-1", "NextSceneId1": 2, "NextSceneId2": 2, "Value": 1 },
+                { "MatrixPosition": "1-2", "NextSceneId1": 3, "NextSceneId2": 3, "Value": 1 },
+                { "MatrixPosition": "2-1", "NextSceneId1": 4, "NextSceneId2": 4, "Value": 1 },
+                { "MatrixPosition": "2-2", "NextSceneId1": 5, "NextSceneId2": 5, "Value": 1 }
+            ]
+        },
+        {
+            "Id": 2,
+            "BackgroundId": 1,
+            "Text": "Следователь|Черт вас побери, все равно отсидите по полгода!",
+            "Sprites": [
+                { "ResourceId": 2, "PositionX": 30, "PositionY": 30 }
+            ],
+            "Type": "Result"
+        },
+        {
+            "Id": 3,
+            "BackgroundId": 1,
+            "Text": "Следователь|Я же тебе говорил! Вот твой подельничек сдал тебя и гуляет теперь на свободе, а тебе теперь 10 лет светит.",
+            "Sprites": [
+                { "ResourceId": 2, "PositionX": 30, "PositionY": 30 }
+            ],
+            "Type": "Result"
+        },
+        {
+            "Id": 4,
+            "BackgroundId": 1,
+            "Text": "Следователь|Вот и молодец! Иди гуляй, пока мы твоего подельничка на 10 лет оформляем.",
+            "Sprites": [
+                { "ResourceId": 2, "PositionX": 30, "PositionY": 30 }
+            ],
+            "Type": "Result"
+        },
+        {
+            "Id": 5,
+            "BackgroundId": 1,
+            "Text": "Следователь|Два болвана сдали друг друга, как и предполагалось. Вот и славно, следующие 2 года вам будет о чем подумать.",
+            "Sprites": [
+                { "ResourceId": 2, "PositionX": 30, "PositionY": 30 }
+            ],
+            "Type": "Result"
+        }
+    ]
+}
