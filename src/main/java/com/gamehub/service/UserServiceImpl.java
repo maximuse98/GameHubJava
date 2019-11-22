@@ -12,6 +12,7 @@ import com.gamehub.view.SessionView;
 import com.gamehub.model.User;
 import com.gamehub.view.UserView;
 
+import org.hibernate.service.UnknownServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -58,7 +59,11 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void saveUser(UserEntity user) {
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userDAO.addUser(user);
+        try {
+            this.getUserEntity(user.getLogin());
+        } catch (Exception e) {
+            userDAO.addUser(user);
+        }
     }
 
     @Override

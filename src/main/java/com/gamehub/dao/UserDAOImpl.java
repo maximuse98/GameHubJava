@@ -1,9 +1,9 @@
 package com.gamehub.dao;
 
 import com.gamehub.entity.UserEntity;
-import com.gamehub.entity.UserRoles;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,21 +27,22 @@ public class UserDAOImpl implements UserDAO {
 
         session.save(user);
 
-        //Commit the transaction
         session.getTransaction().commit();
     }
 
     @Override
-    public UserEntity getUser(String username) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setLogin("example");
-        userEntity.setPassword("040f44c1d9a5160f0f87a9bd6dcf3ee54e715739");
-        userEntity.setUserRole(UserRoles.USER);
-
+    public UserEntity getUser(String username) throws NullPointerException {
         Session session = this.sessionFactory.getCurrentSession();
 
         List query = session.createQuery("from UserEntity where login ='" + username+"'").list();
-        return (UserEntity) query.get(0);
+        UserEntity userEntity;
+        try{
+            userEntity = (UserEntity) query.get(0);
+        }
+        catch (IndexOutOfBoundsException e){
+            throw new UsernameNotFoundException("");
+        }
+        return userEntity;
     }
 
     @Override

@@ -53,12 +53,15 @@ public class GameController {
 
 
 	@RequestMapping(value = {"/login", "/"})
-	public String login(@RequestParam(value = "error", required = false) String error,@RequestParam(value = "logout", required = false) String logout, Model model, Principal principal){
+	public String login(@RequestParam(value = "error", required = false) String error,@RequestParam(value = "message", required = false) String message,@RequestParam(value = "logout", required = false) String logout, Model model, Principal principal){
 		if (error != null) {
 			model.addAttribute("error", "Bad credentials");
 		}
 		if (logout != null) {
-			model.addAttribute("logout", "Successfully logout");
+			model.addAttribute("message", "Successfully logout");
+		}
+		if(message != null){
+			model.addAttribute("message","Account successfully created");
 		}
 		if(principal != null){
 			try{
@@ -82,7 +85,7 @@ public class GameController {
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String register(@ModelAttribute UserEntity user){
 		userService.saveUser(user);
-		return "redirect:/login";
+		return "redirect:/login?message";
 	}
 
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
@@ -118,7 +121,6 @@ public class GameController {
         }
 
         model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-        //model.addAttribute("username", user.getUsername());
         model.addAttribute("gameName", game.getName());
 
         return "session";
@@ -169,12 +171,10 @@ public class GameController {
 		} catch (NotFoundException e) {
 			return handleException(e.getType());
 		}
-		//System.out.println("Invoking an asynchronous method. " + Thread.currentThread().getName());
 		Future<String> future = this.asyncMethodWithReturnType(user,choiceId);
 
 		while (true) {
 			if (future.isDone()) {
-				//System.out.println("Result from asynchronous process - " + future.get());
                 return future.get();
 			}
 		}
@@ -221,7 +221,6 @@ public class GameController {
 
 	@Async
 	public Future<String> asyncMethodWithReturnType(User user, int choiceId) {
-		//System.out.println("Execute method asynchronously - " + Thread.currentThread().getName());
 		try {
 			GameSession currentSession = user.getCurrentSession();
 			currentSession.addChoice(user, choiceId);

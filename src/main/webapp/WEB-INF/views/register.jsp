@@ -9,45 +9,52 @@
   Time: 17:30
   To change this template use File | Settings | File Templates.
 --%>
-<html>
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
     <title>GameHub</title>
+
+    <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
+    <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
 </head>
+
+<style>
+    body {
+        background-image: url("${contextPath}/resources/imgs/background.png");
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: 100% 100%;
+    }
+</style>
 
 <c:url var="register" value="/register" />
 
 <body>
+    <div class="container">
+        <form:form action="${register}" commandName="user" method="POST" class="form-signin">
+            <h2 class="form-heading">Register</h2>
+            <div class="form-group">
 
-<form:form action="${register}" commandName="user" method="POST">
-    <h1>Register</h1>
-    <table>
-        <tr>
-            <td>
-                <form:label path="login">
-                    <spring:message text="Login:"/>
-                </form:label>
-            </td>
-            <td>
-                <form:input path="login" />
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <form:label path="password">
-                    <spring:message text="Password:"/>
-                </form:label>
-            </td>
-            <td>
-                <form:password path="password" />
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type="submit" value="<spring:message text="Register"/>" />
-            </td>
-        </tr>
-    </table>
-</form:form>
+                <form:input path="login" class="form-control" autofocus="autofocus" placeholder="Username"/>
 
+                <form:password path="password" class="form-control" autofocus="autofocus" placeholder="Password"/>
+
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+            </div>
+        </form:form>
+    </div>
+
+    <h4 class="text-center"><a href="${contextPath}/login">Back to login</a></h4>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 </body>
 </html>
