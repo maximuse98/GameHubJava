@@ -14,7 +14,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserService {
-    void saveUser(UserEntity user);
+    void saveUser(String login, String password);
     void createUser(String username);
 
     ResponseEntity<byte[]> getUserBackground(String username) throws SQLException, NotFoundException;

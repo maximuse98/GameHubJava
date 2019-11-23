@@ -33,6 +33,9 @@
         background-attachment: fixed;
         background-size: 100% 100%;
     }
+    .error {
+        color: red;
+    }
 </style>
 
 <c:url var="register" value="/register" />
@@ -43,9 +46,19 @@
             <h2 class="form-heading">Register</h2>
             <div class="form-group">
 
-                <form:input path="login" class="form-control" autofocus="autofocus" placeholder="Username"/>
+                <form:input path="username" class="form-control" autofocus="autofocus" placeholder="Username"/>
+                <form:password path="password" class="form-control" placeholder="Password"/>
+                <form:password path="passwordConfirm" class="form-control" placeholder="Confirm password"/>
 
-                <form:password path="password" class="form-control" autofocus="autofocus" placeholder="Password"/>
+                <form:errors path="passwordConfirm" cssClass="error">
+                    <form:errors path="password" cssClass="error">
+                        <form:errors id="errorName" path="username" cssClass="error" />
+                    </form:errors>
+                </form:errors>
+
+                <c:if test="${not empty error}">
+                    <div class="error">${error}</div>
+                </c:if>
 
                 <button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
             </div>

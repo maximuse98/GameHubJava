@@ -10,6 +10,8 @@ import com.gamehub.model.User;
 import com.gamehub.service.UserService;
 import com.gamehub.service.GameService;
 
+import com.gamehub.view.UserView;
+import org.hibernate.exception.ConstraintViolationException;
 import org.json.simple.parser.ParseException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.validation.Valid;
 import java.io.*;
 import java.security.Principal;
 import java.sql.SQLException;
@@ -51,19 +55,18 @@ public class GameController {
     public void setGameParserService(GameParserService ps){this.gameParserService = ps;}
 
 
-
 	@RequestMapping(value = {"/login", "/"})
-	public String login(@RequestParam(value = "error", required = false) String error,@RequestParam(value = "message", required = false) String message,@RequestParam(value = "logout", required = false) String logout, Model model, Principal principal){
+	public String login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "message", required = false) String message, @RequestParam(value = "logout", required = false) String logout, Model model, Principal principal){
 		if (error != null) {
 			model.addAttribute("error", "Bad credentials");
 		}
 		if (logout != null) {
 			model.addAttribute("message", "Successfully logout");
 		}
-		if(message != null){
+		if (message != null){
 			model.addAttribute("message","Account successfully created");
 		}
-		if(principal != null){
+		if (principal != null){
 			try{
 				User user = userService.getUser(principal.getName());
 				user.getCurrentSession();
@@ -78,13 +81,25 @@ public class GameController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.GET)
 	public String registerPage(Model model){
-		model.addAttribute("user",new UserEntity());
+		model.addAttribute("user",new UserView());
 		return "register";
 	}
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
-	public String register(@ModelAttribute UserEntity user){
-		userService.saveUser(user);
+	public String register(@ModelAttribute("user") @Valid UserView user, BindingResult result, Model model){
+		if (result.hasErrors()) {
+			return "register";
+		}
+		if(!user.getPassword().equals(user.getPasswordConfirm())){
+			model.addAttribute("error", "Passwords are not matched");
+			return "register";
+		}
+		try {
+			userService.saveUser(user.getUsername(),user.getPassword());
+		} catch (ConstraintViolationException e){
+			model.addAttribute("error","Username is already in use");
+			return "register";
+		}
 		return "redirect:/login?message";
 	}
 

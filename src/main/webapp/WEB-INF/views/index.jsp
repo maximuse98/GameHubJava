@@ -34,13 +34,15 @@
         background-attachment: fixed;
         background-size: 100% 100%;
     }
+    .logout {
+        color: limegreen;
+    }
 </style>
 
 <c:url var="login" value="/j_spring_security_check" />
 
 <body>
     <div class="container">
-
         <form:form action="${login}" method="POST" class="form-signin">
             <h2 class="form-heading">Login</h2>
             <c:if test="${not empty message}">
