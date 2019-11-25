@@ -8,7 +8,12 @@
 	<!-- Config for uploading files -->
 	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
 	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:hibernate.properties"/>
+		<property name="locations" >
+			<list>
+				<value>classpath:hibernate.properties</value>
+				<value>classpath:security.properties</value>
+			</list>
+		</property>
 	</bean>
 
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">

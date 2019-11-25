@@ -13,15 +13,21 @@ import java.util.*;
  *
  * id - уникальный id сессии
  * game - текущая игра
- * usersCount -  сколько пользователей в данный момент присоеденились к сессии
- * gameSize - сколько пользователей всего может подключиться к игре (как правило - 2)
- * answeredUsers - сколько пользователей прислали ответ
+ * gameSize - сколько пользователей всего может подключиться к игре
+ * answeredUsers - сколько пользователей прислало ответ
  * creator - создатель игры
+ * exitUsersCount - сколько пользователей успешно завершили игру
+ * users - участники игры
+ * answeredUsers - пользователи, что дали ответ
  *
  * Логика реализована только на двух игроков
  *
- * Поток пользователя из GameController ждет пока значение переменной hasNewScene у пользователя не станет true,
- * затем GameController забирает следующую сцену каждого юзера и ставит hasNewScene = false
+ * Поток Future пользователя из GameController ждет пока значение переменной hasNewScene у пользователя не станет true,
+ * затем GameController забирает следующую сцену каждого юзера и ставит hasNewScene = false, currentFuture = null
+ *
+ * Каждый пользователь может иметь только один поток Future. Если пользователь, который ожидает ответ другого игрока,
+ * перезагрузил страницу и сделал иной выбор, то будет засчитан последний выбор.
+ *
  *
  * @author maximuse98
  *
@@ -31,18 +37,16 @@ public class GameSession {
 
     private int id;
     private Game game;
-    private int usersCount;
     private int gameSize;
-    private int answeredUsers;
     private User creator;
     private int exitUsersCount;
 
-    private List<User> users = new LinkedList<>();
+    private Set<User> users = new HashSet<>();
+    private Set<User> answeredUsers = new HashSet<>();
 
     public GameSession(Game game, User user) {
         this.id = this.hashCode();
         this.game = game;
-        this.usersCount = 1;
         this.exitUsersCount = 0;
         this.creator = user;
         users.add(user);
@@ -51,20 +55,18 @@ public class GameSession {
     }
 
     public void addUser(User user){
-        if(usersCount <= gameSize){
+        if(users.size() <= gameSize){
             user.setCurrentSession(this);
             user.setCurrentScene(game.getStartScene2());
             users.add(user);
-            usersCount++;
         }
     }
 
     public void removeUser(User user){
         if(user.getCurrentChoice()!=null){
-            answeredUsers--;
+            answeredUsers.remove(user);
         }
         users.remove(user);
-        usersCount--;
         user.clearSession();
     }
 
@@ -75,10 +77,10 @@ public class GameSession {
                 user.setCurrentChoice(choice);
             }
         }
-        answeredUsers++;
-        if(answeredUsers == gameSize) {
+        answeredUsers.add(user);
+        if(answeredUsers.size() == gameSize) {
             this.generateNextScenes();
-            answeredUsers = 0;
+            answeredUsers.clear();
         }
     }
 
@@ -91,21 +93,22 @@ public class GameSession {
         matrixPosition = matrixPosition.substring(0, matrixPosition.length() - 1);
         System.out.println("Generated position:"+matrixPosition);
 
-        this.generateNextScene(0, matrixPosition);
+        Iterator<User> iterator = users.iterator();
+
+        this.generateNextScene(iterator.next(), matrixPosition, true);
 
         String[] split = matrixPosition.split("-");
         matrixPosition = split[1]+"-"+split[0];
 
         System.out.println("Generated next position:"+matrixPosition);
-        this.generateNextScene(1, matrixPosition);
+        this.generateNextScene(iterator.next(), matrixPosition, false);
     }
 
-    private void generateNextScene(int userNum, String matrixPosition){
-        User user = users.get(userNum);
+    private void generateNextScene(User user, String matrixPosition, boolean isFirst){
         Set<MatrixVariant> matrixVariants = user.getCurrentScene().getMatrixVariantList();
         for (MatrixVariant matrixVariant: matrixVariants){
             if(matrixVariant.getMatrixPosition().equals(matrixPosition)){
-                if (userNum==0){
+                if (isFirst){
                     user.setCurrentScene(matrixVariant.getNextScene1());
                 }
                 else {
@@ -123,16 +126,12 @@ public class GameSession {
         this.game = game;
     }
 
-    public int getAnsweredUsers() {
-        return answeredUsers;
-    }
-
     public User getCreator() {
         return creator;
     }
 
     public int getUsersCount() {
-        return usersCount;
+        return users.size();
     }
 
     public int getGameSize() {

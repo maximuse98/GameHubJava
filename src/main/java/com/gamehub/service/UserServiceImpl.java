@@ -99,8 +99,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createSession(String creator, Game game) throws NotFoundException {
-        User user = this.getUser(creator);
+    public void createSession(String username, Game game) throws NotFoundException {
+        User user = this.getUser(username);
         GameSession session = new GameSession(game, user);
 
         Scene startScene = game.getStartScene1();
@@ -200,5 +200,13 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserEntity getUserEntity(String username) {
         return userDAO.getUser(username);
+    }
+
+    @Override
+    public void restoreConnection(String username) throws NotFoundException {
+        this.createUser(username);
+
+        User user = this.getUser(username);
+        user.getCurrentSession();
     }
 }

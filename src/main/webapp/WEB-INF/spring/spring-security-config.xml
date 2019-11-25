@@ -12,18 +12,29 @@
     <http auto-config="true" use-expressions="true" authentication-manager-ref="authenticationManager">
         <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
         <intercept-url pattern="/j_spring_security_logout" access="permitAll" />
+        <intercept-url pattern="/login" access="permitAll" />
         <intercept-url pattern="/register" access="permitAll" />
+
+        <intercept-url pattern="/games" access="isAuthenticated()" />
+        <intercept-url pattern="/success" access="isAuthenticated()" />
+        <intercept-url pattern="/start/**" access="isAuthenticated()" />
+        <intercept-url pattern="/game" access="isAuthenticated()" />
+        <intercept-url pattern="/leave" access="isAuthenticated()" />
+        <intercept-url pattern="/exit" access="isAuthenticated()" />
+        <intercept-url pattern="/connect" access="isAuthenticated()" />
+        <intercept-url pattern="/send/**" access="isAuthenticated()" />
 
         <!-- access denied page -->
         <access-denied-handler error-page="/403" />
+
         <form-login
                 login-page="/login"
-                default-target-url="/games"
+                default-target-url="/success"
                 login-processing-url="/j_spring_security_check"
-                authentication-failure-url="/login?error"
+                authentication-failure-url="/login?status=error"
                 username-parameter="username"
                 password-parameter="password"/>
-        <logout logout-success-url="/login?logout" logout-url="/j_spring_security_logout" />
+        <logout logout-success-url="/login?status=logout" logout-url="/j_spring_security_logout" />
 
         <!-- enable csrf protection -->
         <csrf />
@@ -41,8 +52,10 @@
     </authentication-manager>
 
     <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
-        <beans:constructor-arg name="strength" value="9" />
+        <beans:constructor-arg name="strength" value="${round}" />
     </beans:bean>
+
+    <global-method-security pre-post-annotations="enabled"/>
 
     <context:component-scan base-package="com.gamehub" />
 </beans:beans>

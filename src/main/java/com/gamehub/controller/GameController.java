@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -42,7 +40,9 @@ public class GameController {
 
 	@Autowired
 	@Qualifier(value="userService")
-	public void setUserService(UserService us){this.userService = us;}
+	public void setUserService(UserService us){
+		this.userService = us;
+	}
 	
 	@Autowired
 	@Qualifier(value="gameService")
@@ -56,24 +56,27 @@ public class GameController {
 
 
 	@RequestMapping(value = {"/login", "/"})
-	public String login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "message", required = false) String message, @RequestParam(value = "logout", required = false) String logout, Model model, Principal principal){
-		if (error != null) {
-			model.addAttribute("error", "Bad credentials");
-		}
-		if (logout != null) {
-			model.addAttribute("message", "Successfully logout");
-		}
-		if (message != null){
-			model.addAttribute("message","Account successfully created");
+	public String login(@RequestParam(value = "status", required = false) String status, Model model, Principal principal){
+		if(status != null){
+			switch (status) {
+				case "created":
+					model.addAttribute("message", "Account successfully created");
+					break;
+				case "logout":
+					model.addAttribute("message", "Successfully logout");
+					break;
+				case "error":
+					model.addAttribute("error", "Bad credentials");
+					break;
+			}
 		}
 		if (principal != null){
 			try{
-				User user = userService.getUser(principal.getName());
-				user.getCurrentSession();
+				userService.restoreConnection(principal.getName());
+				return "redirect:/game";
 			}catch (NotFoundException e){
 				return handleException(e.getType());
 			}
-			return "redirect:/game";
 		}
 		model.addAttribute("user",new UserEntity());
 		return "index";
@@ -100,17 +103,21 @@ public class GameController {
 			model.addAttribute("error","Username is already in use");
 			return "register";
 		}
-		return "redirect:/login?message";
+		return "redirect:/login?status=created";
 	}
 
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
-	public String login(Model model, Principal principal){
-		userService.createUser(principal.getName());
-
+	public String login(Model model){
 		model.addAttribute("listGames", gameService.getGameViews());
         model.addAttribute("listSessions",userService.getSessionViews());
         model.addAttribute("listUsers", userService.getUserViews());
 		return "game";
+	}
+
+	@RequestMapping(value = "/success", method = RequestMethod.GET)
+	public String successLogin(Principal principal){
+		userService.createUser(principal.getName());
+		return "redirect:/games";
 	}
 	
 	@RequestMapping(value = "/start/{gameId}", method = RequestMethod.GET)
@@ -186,12 +193,19 @@ public class GameController {
 		} catch (NotFoundException e) {
 			return handleException(e.getType());
 		}
-		Future<String> future = this.asyncMethodWithReturnType(user,choiceId);
 
-		while (true) {
-			if (future.isDone()) {
-                return future.get();
-			}
+		String successUrl = "redirect:/game";
+
+		if(user.hasNewScene()){
+			return successUrl;
+		}
+		Future<String> currentFuture = user.getCurrentFuture();
+		if(currentFuture != null){
+			return currentFuture.get();
+		} else {
+			Future<String> newFuture = user.doAsync(choiceId,successUrl);
+			user.setCurrentFuture(newFuture);
+			return newFuture.get();
 		}
 	}
 
@@ -233,25 +247,6 @@ public class GameController {
 	    gameService.removeGame(gameId);
         return "redirect:/upload";
     }
-
-	@Async
-	public Future<String> asyncMethodWithReturnType(User user, int choiceId) {
-		try {
-			GameSession currentSession = user.getCurrentSession();
-			currentSession.addChoice(user, choiceId);
-			while(!user.hasNewScene()){
-			    user.getCurrentSession();
-				Thread.sleep(1000);
-			}
-			//System.out.println("Finish method - " + Thread.currentThread().getName());
-			return new AsyncResult<>("redirect:/game");
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-            return new AsyncResult<>(null);
-		} catch (NotFoundException e) {
-			return new AsyncResult<>(handleException(e.getType()));
-		}
-	}
 
 	private String handleException(ExceptionType type){
 		switch (type){

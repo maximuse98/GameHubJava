@@ -3,6 +3,9 @@ package com.gamehub.model;
 import com.gamehub.controller.GameSession;
 import com.gamehub.exception.ExceptionType;
 import com.gamehub.exception.NotFoundException;
+import org.springframework.scheduling.annotation.AsyncResult;
+
+import java.util.concurrent.Future;
 
 public class User {
     private String username;
@@ -12,6 +15,8 @@ public class User {
     private Scene currentScene;
     private Choice currentChoice;
     private boolean hasNewScene;
+
+    private Future<String> currentFuture;
 
     public User() {
         this.hasNewScene = false;
@@ -51,6 +56,7 @@ public class User {
 
     public Scene getCurrentScene() {
         this.hasNewScene = false;
+        this.currentFuture = null;
         return currentScene;
     }
 
@@ -68,10 +74,14 @@ public class User {
     }
 
     public void clearSession() {
+        if(currentFuture != null){
+            currentFuture.cancel(true);
+        }
         this.currentScene = null;
         this.currentSession = null;
         this.hasNewScene = false;
         this.currentChoice = null;
+        this.currentFuture = null;
     }
 
     public boolean hasNewScene() {
@@ -80,6 +90,29 @@ public class User {
 
     public void setHasNewScene(boolean hasNewScene) {
         this.hasNewScene = hasNewScene;
+    }
+
+    public Future<String> getCurrentFuture() {
+        return currentFuture;
+    }
+
+    public void setCurrentFuture(Future<String> currentFuture) {
+        this.currentFuture = currentFuture;
+    }
+
+    public Future<String> doAsync(int choiceId, String successUrl){
+        try {
+            currentSession.addChoice(this, choiceId);
+            while(!hasNewScene){
+                //this.getCurrentSession();
+                Thread.sleep(1000);
+            }
+            //System.out.println("Finish method - " + Thread.currentThread().getName());
+            return new AsyncResult<>(successUrl);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return new AsyncResult<>(null);
+        }
     }
 
     @Override

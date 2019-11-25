@@ -35,4 +35,6 @@ public interface UserService {
     List<SessionView> getSessionViews();
 
     UserEntity getUserEntity(String username);
+
+    void restoreConnection(String username) throws NotFoundException;
 }
