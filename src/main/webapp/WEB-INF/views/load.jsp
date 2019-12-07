@@ -1,5 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%--
   Created by IntelliJ IDEA.
   User: maxim
@@ -25,6 +26,19 @@
     <h2>
         Game manager page
     </h2>
+
+    <div style="position: absolute; top: 20px; right: 20px; width: 300px; text-align:right;">
+        <c:url value="/exit" var="logoutUrl"/>
+        <c:url value="/games" var="gamesUrl"/>
+        <form:form action="${logoutUrl}" method="post">
+            <button type="submit">Exit</button>
+        </form:form>
+        <form:form action="${gamesUrl}" method="get">
+            <button type="submit">Main</button>
+        </form:form>
+        Current user: ${pageContext.request.userPrincipal.name}
+    </div>
+
     <c:if test="${!empty listGames}">
         <h3>Games List</h3>
         <table class="tg">

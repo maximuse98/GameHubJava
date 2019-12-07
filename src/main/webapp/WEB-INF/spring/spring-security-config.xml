@@ -10,28 +10,31 @@
 
     <!-- enable use-expressions -->
     <http auto-config="true" use-expressions="true" authentication-manager-ref="authenticationManager">
-        <intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/upload" access="hasRole('ROLE_ADMIN')" />
+        <intercept-url pattern="/delete" access="hasRole('ROLE_ADMIN')" />
+
         <intercept-url pattern="/j_spring_security_logout" access="permitAll" />
         <intercept-url pattern="/login" access="permitAll" />
-        <intercept-url pattern="/register" access="permitAll" />
+        <intercept-url pattern="/registry" access="permitAll" />
 
-        <intercept-url pattern="/games" access="isAuthenticated()" />
-        <intercept-url pattern="/success" access="isAuthenticated()" />
-        <intercept-url pattern="/start/**" access="isAuthenticated()" />
-        <intercept-url pattern="/game" access="isAuthenticated()" />
-        <intercept-url pattern="/leave" access="isAuthenticated()" />
         <intercept-url pattern="/exit" access="isAuthenticated()" />
-        <intercept-url pattern="/connect" access="isAuthenticated()" />
-        <intercept-url pattern="/send/**" access="isAuthenticated()" />
+
+        <intercept-url pattern="/games" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/start/**" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/game" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/leave" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/connect" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/send/**" access="hasRole('ROLE_USER')" />
+        <intercept-url pattern="/image/**" access="hasRole('ROLE_USER')" />
 
         <!-- access denied page -->
-        <access-denied-handler error-page="/403" />
+        <access-denied-handler error-page="/error" />
 
         <form-login
                 login-page="/login"
-                default-target-url="/success"
                 login-processing-url="/j_spring_security_check"
                 authentication-failure-url="/login?status=error"
+                authentication-success-handler-ref="myAuthenticationSuccessHandler"
                 username-parameter="username"
                 password-parameter="password"/>
         <logout logout-success-url="/login?status=logout" logout-url="/j_spring_security_logout" />
@@ -42,17 +45,16 @@
 
     <authentication-manager id="authenticationManager">
         <authentication-provider user-service-ref="userDetailsService">
-            <!--<user-service>
-                <user name="admin" password="admin" authorities="ROLE_USER, ROLE_ADMIN" />
-                <user name="user" password="user" authorities="ROLE_USER" />
-                <user name="guest" password="guest" authorities="ROLE_GUEST" />
-            </user-service>-->
             <password-encoder ref="encoder"/>
         </authentication-provider>
     </authentication-manager>
 
     <beans:bean id="encoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder">
         <beans:constructor-arg name="strength" value="${round}" />
+    </beans:bean>
+
+    <beans:bean id="myAuthenticationSuccessHandler" class="com.gamehub.security.CustomAuthenticationSuccessHandler" >
+        <beans:property name="userService" ref="userService"/>
     </beans:bean>
 
     <global-method-security pre-post-annotations="enabled"/>

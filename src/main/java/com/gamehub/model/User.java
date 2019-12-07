@@ -1,15 +1,14 @@
 package com.gamehub.model;
 
 import com.gamehub.controller.GameSession;
-import com.gamehub.exception.ExceptionType;
-import com.gamehub.exception.NotFoundException;
 import org.springframework.scheduling.annotation.AsyncResult;
 
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 public class User {
     private String username;
-    private String password;
 
     private GameSession currentSession;
     private Scene currentScene;
@@ -35,18 +34,7 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public GameSession getCurrentSession() throws NotFoundException {
-        if(currentSession == null){
-            throw new NotFoundException(ExceptionType.SESSION);
-        }
+    public GameSession getCurrentSession(){
         return currentSession;
     }
 
@@ -55,8 +43,10 @@ public class User {
     }
 
     public Scene getCurrentScene() {
-        this.hasNewScene = false;
-        this.currentFuture = null;
+        if(currentScene != null) {
+            this.hasNewScene = false;
+            this.currentFuture = null;
+        }
         return currentScene;
     }
 
@@ -115,11 +105,25 @@ public class User {
         }
     }
 
+    public Optional<Choice> getChoice(int choiceId){
+        Set<Choice> choices;
+        try {
+            choices = this.getCurrentScene().getChoices();
+        } catch (NullPointerException e){
+            return Optional.empty();
+        }
+        for (Choice choice:choices) {
+            if(choiceId==choice.getId()){
+                return Optional.of(choice);
+            }
+        }
+        return Optional.empty();
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +
-                ", password='" + password + '\'' +
                 ", currentSession=" + currentSession +
                 ", currentScene=" + currentScene +
                 ", currentChoice=" + currentChoice +

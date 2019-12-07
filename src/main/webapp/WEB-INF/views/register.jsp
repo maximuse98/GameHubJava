@@ -38,12 +38,12 @@
     }
 </style>
 
-<c:url var="register" value="/register" />
+<c:url var="register" value="/registry" />
 
 <body>
     <div class="container">
         <form:form action="${register}" commandName="user" method="POST" class="form-signin">
-            <h2 class="form-heading">Register</h2>
+            <h2 class="form-heading">Registry</h2>
             <div class="form-group">
 
                 <form:input path="username" class="form-control" autofocus="autofocus" placeholder="Username"/>
@@ -60,7 +60,7 @@
                     <div class="error">${error}</div>
                 </c:if>
 
-                <button type="submit" class="btn btn-lg btn-primary btn-block">Register</button>
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Sign up</button>
             </div>
         </form:form>
     </div>

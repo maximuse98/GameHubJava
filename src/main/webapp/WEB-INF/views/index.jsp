@@ -16,7 +16,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="X-UA-Compatible">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -55,11 +55,11 @@
                     <span>${error}</span>
                 </c:if>
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <button type="submit" class="btn btn-lg btn-primary btn-block">Login</button>
+                <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
             </div>
         </form:form>
 
-        <h4 class="text-center"><a href="${contextPath}/register">Create an account</a></h4>
+        <h4 class="text-center"><a href="${contextPath}/registry">Create an account</a></h4>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="${contextPath}/resources/js/bootstrap.min.js"></script>

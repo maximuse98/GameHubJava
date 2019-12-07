@@ -11,8 +11,8 @@ public class UserEntity {
     private String login;
     private String password;
 
-    @Transient
-    private UserRoles userRole;
+    @Enumerated(EnumType.STRING)
+    private UserRoles role;
 
     public String getLogin() {
         return login;
@@ -31,11 +31,11 @@ public class UserEntity {
     }
 
     public UserRoles getUserRole() {
-        return userRole;
+        return role;
     }
 
     public void setUserRole(UserRoles userRole) {
-        this.userRole = userRole;
+        this.role = userRole;
     }
 
     @Override

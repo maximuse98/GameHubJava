@@ -33,7 +33,7 @@ public class UserView {
         this.username = user.getUsername();
         try {
             this.currentGameName = user.getCurrentSession().getGame().getName();
-        }catch (NullPointerException | NotFoundException e){
+        }catch (NullPointerException e){
             this.currentGameName = null;
         }
     }

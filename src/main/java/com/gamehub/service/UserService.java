@@ -12,22 +12,23 @@ import org.springframework.http.ResponseEntity;
 import java.sql.Blob;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
     void saveUser(String login, String password);
     void createUser(String username);
 
-    ResponseEntity<byte[]> getUserBackground(String username) throws SQLException, NotFoundException;
-    ResponseEntity<byte[]> getUserSprite(String username, int spriteId) throws SQLException, NotFoundException;
+    ResponseEntity<byte[]> getUserBackground(String username) throws SQLException;
+    ResponseEntity<byte[]> getUserSprite(String username, int spriteId) throws SQLException;
 
-    void createSession(String creator, Game game) throws NotFoundException ;
-    void addUserToSession(String username, int sessionId) throws NotFoundException;
-    void leaveSession(String username) throws NotFoundException;
-    void removeUser(String username) throws NotFoundException;
+    void createSession(String creator, Game game);
+    void addUserToSession(String username, int sessionId);
+    void leaveSession(String username);
+    void removeUser(String username);
 
-    User getUser(String username) throws NotFoundException;
-    Blob getImage(int id, String username) throws NotFoundException;
-    GameSession getSession(int id) throws NotFoundException;
+    User getUser(String username);
+    Blob getImage(int id, String username);
+    Optional<GameSession> getSession(int id);
 
     List<User> getUsers();
     List<UserView> getUserViews();

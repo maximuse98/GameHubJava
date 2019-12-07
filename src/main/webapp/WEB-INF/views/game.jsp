@@ -8,6 +8,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="security"%>
 <%@ page session="false" %>
 <html>
 <head>
@@ -35,12 +36,18 @@
         <!--<redirect url="/j_spring_security_logout"/>-->
     </c:if>
 
-    <div style="position: absolute; top: 20px; right: 20px; width: 250px; text-align:right;">
+    <div style="position: absolute; top: 20px; right: 20px; width: 300px; text-align:right;">
         <c:url value="/exit" var="logoutUrl"/>
+        <c:url value="/upload" var="uploadUrl"/>
         <form:form action="${logoutUrl}" method="post">
             <button type="submit">Exit</button>
-            Current user: ${pageContext.request.userPrincipal.name}
         </form:form>
+        <security:authorize access="hasRole('ROLE_ADMIN')">
+            <form action="${uploadUrl}" method="get">
+                <button type="submit">Admin</button>
+            </form>
+        </security:authorize>
+        Current user: ${pageContext.request.userPrincipal.name}
     </div>
 
     <c:if test="${!empty listUsers}">
@@ -67,17 +74,19 @@
                     <!--<th width="80">Game ID</th>-->
                     <th width="120">Game Name</th>
                     <th width="120">Game Players</th>
-                    <th width="60">Begin session</th>
+                    <!--<th width="60">Begin session</th>-->
                 </tr>
                 <c:forEach items="${listGames}" var="game">
                     <tr>
                         <!--<td>${game.id}</td>-->
                         <td>${game.name}</td>
                         <td>${game.playersCount}</td>
-                        <td>
-                            <spring:url value="/start/${game.id}" var="userUrl" />
-                            <button onclick="location.href='${userUrl}'">Start</button>
-                        </td>
+                        <security:authorize access="hasRole('ROLE_USER')">
+                            <td>
+                                <spring:url value="/start/${game.id}" var="userUrl" />
+                                <button onclick="location.href='${userUrl}'">Start</button>
+                            </td>
+                        </security:authorize>
                     </tr>
                 </c:forEach>
             </table>
@@ -96,12 +105,14 @@
                         <td>${session.creatorUsername}</td>
                         <td>${session.gameSize}</td>
                         <td>${session.usersCount}</td>
-                        <c:if test="${session.usersCount<session.gameSize}">
-                            <td>
-                                <spring:url value="/connect/${session.id}" var="connect" />
-                                <button onclick="location.href='${connect}'">Connect</button>
-                            </td>
-                        </c:if>
+                        <security:authorize access="hasRole('ROLE_USER')">
+                            <c:if test="${session.usersCount<session.gameSize}">
+                                <td>
+                                    <spring:url value="/connect/${session.id}" var="connect" />
+                                    <button onclick="location.href='${connect}'">Connect</button>
+                                </td>
+                            </c:if>
+                        </security:authorize>
                     </tr>
                 </c:forEach>
             </table>

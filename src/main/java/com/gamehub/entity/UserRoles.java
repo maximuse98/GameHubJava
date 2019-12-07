@@ -1,7 +1,7 @@
 package com.gamehub.entity;
 
 public enum UserRoles {
-    ADMIN,
-    USER,
-    ANONYMOUS
+    ROLE_ADMIN,
+    ROLE_USER,
+    ROLE_ANONYMOUS
 }
