@@ -1,0 +1,9 @@
+body {
+    background-image: url("/resources/imgs/background.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: 100% 100%;
+}
+.logout {
+    color: limegreen;
+}
