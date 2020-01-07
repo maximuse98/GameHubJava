@@ -20,6 +20,11 @@ public class Scene {
     @JoinColumn(name = "backgroundId")
     private ImageResource background;
 
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    @JoinColumn(name = "nextSceneId")
+    private Scene nextScene;
+
     @OneToMany(mappedBy = "scene", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)
     private Set<Sprite> sprites;
@@ -34,9 +39,12 @@ public class Scene {
 
     private String text;
     private String type;
+    private String speaker;
 
     @Transient
     private int jsonId;
+    @Transient
+    private int nextSceneJsonId;
 
     public int getId() {
         return id;
@@ -100,6 +108,30 @@ public class Scene {
 
     public void setJsonId(int jsonId) {
         this.jsonId = jsonId;
+    }
+
+    public Scene getNextScene() {
+        return nextScene;
+    }
+
+    public void setNextScene(Scene nextScene) {
+        this.nextScene = nextScene;
+    }
+
+    public int getNextSceneJsonId() {
+        return nextSceneJsonId;
+    }
+
+    public void setNextSceneJsonId(int nextSceneJsonId) {
+        this.nextSceneJsonId = nextSceneJsonId;
+    }
+
+    public String getSpeaker() {
+        return speaker;
+    }
+
+    public void setSpeaker(String speaker) {
+        this.speaker = speaker;
     }
 
     @Override

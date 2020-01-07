@@ -42,13 +42,15 @@ public class GameParserServiceImpl implements GameParserService {
         game.setName((String) jsonObject.get("Name"));
         game.setPlayersCount(Math.toIntExact((Long) jsonObject.get("PlayersCount")));
         int startSceneId1 = Math.toIntExact((Long) jsonObject.get("StartSceneId1"));
-        int startSceneId2 = Math.toIntExact((Long) jsonObject.get("StartSceneId1"));
+        int startSceneId2 = Math.toIntExact((Long) jsonObject.get("StartSceneId2"));
+        game.setColorTheme((String) jsonObject.get("ColorTheme"));
 
         this.imageResources = new LinkedList<>();
         List<Scene> scenes1 = new LinkedList<>();
 
         Set<Sprite> sprites1 = new HashSet<>();
         Set<Choice> choices1 = new HashSet<>();
+        HashSet<Role> roles = new HashSet<>();
         Set<MatrixVariant> choiceMatrix1 = new HashSet<>();
 
         JSONArray jsonResources = (JSONArray) jsonObject.get("ImageResources");
@@ -58,6 +60,15 @@ public class GameParserServiceImpl implements GameParserService {
             imageResource.setPath((String) resource.get("Path"));
             imageResources.add(imageResource);
         }
+
+        JSONArray jsonRoles = (JSONArray) jsonObject.get("Roles");
+        for (JSONObject jsonRole : (Iterable<JSONObject>) jsonRoles) {
+            Role role = new Role();
+            role.setGame(game);
+            role.setName((String) jsonRole.get("Name"));
+            roles.add(role);
+        }
+        game.setRoles(roles);
 
         JSONArray scenes = (JSONArray) jsonObject.get("Scenes");
         for (JSONObject next : (Iterable<JSONObject>) scenes) {
@@ -69,6 +80,7 @@ public class GameParserServiceImpl implements GameParserService {
             if (scene.getJsonId() == startSceneId2) {
                 game.setStartScene2(scene);
             }
+            scene.setSpeaker((String) next.get("Speaker"));
             scene.setText((String) next.get("Text"));
             scene.setType((String) next.get("Type"));
 
@@ -83,14 +95,15 @@ public class GameParserServiceImpl implements GameParserService {
                     }
                 }
                 sprite.setScene(scene);
-                sprite.setPositionX(Math.toIntExact((Long) next1.get("PositionX")));
-                sprite.setPositionY(Math.toIntExact((Long) next1.get("PositionY")));
                 sprites1.add(sprite);
                 sceneSprites.add(sprite);
             }
             scene.setSprites(sceneSprites);
+            if(scene.getType().equals("Normal")){
+                scene.setNextSceneJsonId(Math.toIntExact((Long) next.get("NextSceneId")));
+            }
 
-            if (scene.getType().equals("Normal")) {
+            if (scene.getType().equals("Quest")) {
                 JSONArray choices = (JSONArray) next.get("Choices");
                 for (JSONObject next1 : (Iterable<JSONObject>) choices) {
                     Choice choice = new Choice();
@@ -114,13 +127,13 @@ public class GameParserServiceImpl implements GameParserService {
                 }
                 scene.setMatrixVariantList(choiceMatrix1);
             }
-            scenes1.add(scene);
             int backgroundId = Math.toIntExact((Long) next.get("BackgroundId"));
             for (ImageResource im : imageResources) {
                 if (backgroundId == im.getJsonId()) {
                     scene.setBackground(im);
                 }
             }
+            scenes1.add(scene);
         }
         for (MatrixVariant m: choiceMatrix1) {
             for (Scene s: scenes1) {
@@ -129,6 +142,15 @@ public class GameParserServiceImpl implements GameParserService {
                 }
                 if(s.getJsonId() == m.getNextSceneId2()){
                     m.setNextScene2(s);
+                }
+            }
+        }
+        for (Scene s: scenes1) {
+            if (s.getType().equals("Normal")) {
+                for (Scene s1 : scenes1) {
+                    if (s1.getJsonId() == s.getNextSceneJsonId()) {
+                        s.setNextScene(s1);
+                    }
                 }
             }
         }

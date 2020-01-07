@@ -105,6 +105,7 @@ public class UserServiceImpl implements UserService {
         user.setCurrentSession(session);
         user.setCurrentScene(startScene);
         user.setHasNewScene(false);
+        user.setCurrentRole(game.getRoles().iterator().next().getName());
 
         sessions.add(session);
     }
@@ -213,5 +214,11 @@ public class UserServiceImpl implements UserService {
 
         User user = this.getUser(username);
         user.getCurrentSession();
+    }
+
+    @Override
+    public void setNewScene(String username){
+        User user = this.getUser(username);
+        user.setCurrentScene(user.getCurrentScene().getNextScene());
     }
 }

@@ -1,7 +1,6 @@
 package com.gamehub.service;
 
 import com.gamehub.entity.UserEntity;
-import com.gamehub.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

@@ -24,31 +24,12 @@ public class Sprite {
     @JoinColumn(name = "sceneId")
     private Scene scene;
 
-    private int positionX;
-    private int positionY;
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getPositionX() {
-        return positionX;
-    }
-
-    public void setPositionX(int positionX) {
-        this.positionX = positionX;
-    }
-
-    public int getPositionY() {
-        return positionY;
-    }
-
-    public void setPositionY(int positionY) {
-        this.positionY = positionY;
     }
 
     public ImageResource getImageResource() {
@@ -72,8 +53,6 @@ public class Sprite {
         return "Sprite{" +
                 "id=" + id +
                 ", imageResource=" + imageResource +
-                ", positionX=" + positionX +
-                ", positionY=" + positionY +
                 ", scene=" + scene +
                 '}';
     }

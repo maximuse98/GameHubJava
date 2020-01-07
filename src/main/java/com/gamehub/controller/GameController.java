@@ -116,12 +116,20 @@ public class GameController {
 		return USER_SESSION_URL;
     }
 
+	@RequestMapping(value = "/next", method = RequestMethod.GET)
+	public String setNextScene(Principal principal){
+		userService.setNewScene(principal.getName());
+		return USER_SESSION_URL;
+	}
+
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     public String getScene(Model model, Principal principal){
         User user = userService.getUser(principal.getName());
 
         model.addAttribute("scene", new SceneView(user.getCurrentScene()));
         model.addAttribute("gameName", user.getCurrentSession().getGame().getName());
+        model.addAttribute("gameColor", user.getCurrentSession().getGame().getColorTheme());
+        model.addAttribute("userRole", user.getCurrentRole());
 
         return "session";
     }
@@ -162,9 +170,8 @@ public class GameController {
 			Future<String> newFuture = user.doAsync(choiceId,USER_SESSION_URL);
 			user.setCurrentFuture(newFuture);
 			return newFuture.get();
-		} else {
-			return currentFuture.get();
 		}
+		return currentFuture.get();
 	}
 
 	@RequestMapping(value = "/image/sprite/{spriteId}", produces = MediaType.IMAGE_PNG_VALUE)

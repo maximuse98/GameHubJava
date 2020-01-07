@@ -1,9 +1,6 @@
 package com.gamehub.controller;
 
-import com.gamehub.model.Choice;
-import com.gamehub.model.Game;
-import com.gamehub.model.MatrixVariant;
-import com.gamehub.model.User;
+import com.gamehub.model.*;
 
 import java.util.*;
 
@@ -58,6 +55,11 @@ public class GameSession {
         if(users.size() <= gameSize){
             user.setCurrentSession(this);
             user.setCurrentScene(game.getStartScene2());
+
+            Iterator<Role> roleIterator = game.getRoles().iterator();
+            roleIterator.next();
+
+            user.setCurrentRole(roleIterator.next().getName());
             users.add(user);
         }
     }
@@ -94,14 +96,22 @@ public class GameSession {
         System.out.println("Generated position:"+matrixPosition);
 
         Iterator<User> iterator = users.iterator();
+        User user1 = iterator.next();
+        Set<MatrixVariant> matrixVariants = user1.getCurrentScene().getMatrixVariantList();
+        for (MatrixVariant matrixVariant: matrixVariants){
+            if(matrixVariant.getMatrixPosition().equals(matrixPosition)){
+                user1.setCurrentScene(matrixVariant.getNextScene1());
+                iterator.next().setCurrentScene(matrixVariant.getNextScene2());
+            }
+        }
 
-        this.generateNextScene(iterator.next(), matrixPosition, true);
+        //this.generateNextScene(iterator.next(), matrixPosition, true);
 
-        String[] split = matrixPosition.split("-");
-        matrixPosition = split[1]+"-"+split[0];
+        //String[] split = matrixPosition.split("-");
+        //matrixPosition = split[1]+"-"+split[0];
 
-        System.out.println("Generated next position:"+matrixPosition);
-        this.generateNextScene(iterator.next(), matrixPosition, false);
+        //System.out.println("Generated next position:"+matrixPosition);
+        //this.generateNextScene(iterator.next(), matrixPosition, false);
     }
 
     private void generateNextScene(User user, String matrixPosition, boolean isFirst){

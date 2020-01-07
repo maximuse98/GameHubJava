@@ -24,23 +24,16 @@
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
-</head>
+    <link href="${contextPath}/resources/css/index.css" rel="stylesheet">
 
-<style>
-    body {
-        background-image: url("${contextPath}/resources/imgs/background.png");
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-size: 100% 100%;
-    }
-    .error {
-        color: red;
-    }
-</style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+</head>
 
 <c:url var="register" value="/registry" />
 
 <body>
+    <div id="fb-root"></div>
     <div class="container">
         <form:form action="${register}" commandName="user" method="POST" class="form-signin">
             <h2 class="form-heading">Registry</h2>
@@ -66,8 +59,5 @@
     </div>
 
     <h4 class="text-center"><a href="${contextPath}/login">Back to login</a></h4>
-
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
 </body>
 </html>

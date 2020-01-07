@@ -14,12 +14,14 @@ public class SceneView {
     private Set<ChoiceView> choices;
     private List<PhraseView> phrases;
     private String type;
+    private String speaker;
 
     public SceneView(Scene scene){
         sprites = new HashSet<>();
         choices = new HashSet<>();
         phrases = new ArrayList<>();
         this.type = scene.getType();
+        this.speaker = scene.getSpeaker();
         for (Sprite sprite:scene.getSprites()) {
             sprites.add(new SpriteView(sprite));
         }
@@ -29,7 +31,7 @@ public class SceneView {
         String[] text = scene.getText().split("[|]");
         for(int i=0;i<text.length;){
             try {
-                phrases.add(new PhraseView(text[i++],text[i++]));
+                phrases.add(new PhraseView(text[i++]));
             } catch (NullPointerException ignored){}
         }
     }
@@ -48,5 +50,9 @@ public class SceneView {
 
     public String getType() {
         return type;
+    }
+
+    public String getSpeaker() {
+        return speaker;
     }
 }

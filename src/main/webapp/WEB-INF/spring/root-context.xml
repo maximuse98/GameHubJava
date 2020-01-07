@@ -34,6 +34,7 @@
 				<value>com.gamehub.model.MatrixVariant</value>
 				<value>com.gamehub.model.Scene</value>
 				<value>com.gamehub.model.Sprite</value>
+				<value>com.gamehub.model.Role</value>
 				<value>com.gamehub.entity.UserEntity</value>
 			</list>
 		</property>

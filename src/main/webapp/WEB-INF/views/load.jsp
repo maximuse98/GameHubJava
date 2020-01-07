@@ -61,14 +61,16 @@
         </c:forEach>
         </table>
     </c:if>
-    <form action="${upload}" method="post" enctype="multipart/form-data">
+    <form action="${upload}" method="POST" enctype="multipart/form-data">
         <table>
             <h3>Load game</h3>
             <tr>
                 <td>Load json:<input type="file" name="game"/></td></tr><tr>
                 <td>Load images:<input type="file" name="images" multiple="multiple" /></td>
             </tr>
-            <tr><td><input type="submit" value="Upload" /></td></tr>
+
+            <!--<input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>-->
+            <input type="submit" value="Upload" />
         </table>
     </form>
 </body>

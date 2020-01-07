@@ -25,19 +25,8 @@
 
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
+    <link href="${contextPath}/resources/css/index.css" rel="stylesheet">
 </head>
-
-<style>
-    body {
-        background-image: url("${contextPath}/resources/imgs/background.png");
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-size: 100% 100%;
-    }
-    .logout {
-        color: limegreen;
-    }
-</style>
 
 <c:url var="login" value="/j_spring_security_check" />
 

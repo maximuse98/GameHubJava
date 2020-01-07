@@ -9,45 +9,69 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
 <%@ page session="false" %>
+
+<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+
 <html>
-<head>
-    <title>${gameName}</title>
-    <style type="text/css">
-        .tg  {border-collapse:collapse;border-spacing:0;border-color:#ccc;}
-        .tg td{font-family:Arial, sans-serif;font-size:14px;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#fff;}
-        .tg th{font-family:Arial, sans-serif;font-size:14px;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:#ccc;color:#333;background-color:#f0f0f0;}
-        .tg .tg-4eph{background-color:#f9f9f9}
-    </style>
-</head>
-<body>
-    <h1>
-        ${gameName}
-    </h1>
+    <head>
+        <meta charset="utf-8">
+        <title>${gameName}</title>
 
-    <div style="position: absolute; top: 20px; right: 20px; width: 250px; text-align:right;">
-        <spring:url value="/leave" var="userUrl" />
-        <button onclick="location.href='${userUrl}'">Leave</button>
-        Current user: ${pageContext.request.userPrincipal.name}
-    </div>
+        <link rel="stylesheet" href="${contextPath}/resources/css/game.css">
+        <link rel="stylesheet" href="${contextPath}/resources/css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/ldbtn.min.css">
+        <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/ldld.css"/>
+        <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/loading.min.css"/>
 
-    <c:forEach items="${scene.phrases}" var="phrase">
-        ${phrase.speaker} - ${phrase.speech}
-    </c:forEach>
+        <script src="${contextPath}/resources/js/ldld.js"></script>
+        <script src="${contextPath}/resources/js/session.js"></script>
+    </head>
+    <body onload="setFooterColor('${gameColor}')">
+        <div id="bg" >
+            <img src="/image/background" alt=""/>
+        </div>
 
-    <br>
-    <c:forEach items="${scene.choices}" var="choice">
-        <spring:url value="/send/${choice.id}" var="userUrl" />
-        <button onclick="location.href='${userUrl}'">${choice.caption}</button>
-    </c:forEach>
-    <c:if test="${scene.type == 'Result'}">
-        <spring:url value="/leave" var="exit" />
-        <button onclick="location.href='${exit}'">End game</button>
-    </c:if>
-    <br>
+        <header>
+            <h1>${gameName}</h1>
+            <div class="usrnm">
+                <div class="login">${pageContext.request.userPrincipal.name} - ${userRole}</div>
+            </div>
+        </header>
 
-    <c:forEach items="${scene.sprites}" var="sprite">
-        <img src="/image/sprite/${sprite.id}" alt="image"/>
-    </c:forEach>
-    <img src="/image/background" alt="image"/>
-</body>
+        <div id="sprite">
+            <c:forEach items="${scene.sprites}" var="sprite">
+                <img src="/image/sprite/${sprite.id}" alt="image"/>
+            </c:forEach>
+        </div>
+
+        <div class="footer" id="ftr" style="background-color: ${gameColor};">
+            <c:if test="${scene.speaker != null}">
+                <div class="footer2" style="background-color: ${gameColor};">${scene.speaker}</div>
+            </c:if>
+            <c:forEach items="${scene.phrases}" var="phrase">
+                <p>${phrase.speech}</p>
+            </c:forEach>
+            <div class="chs">
+                <c:forEach items="${scene.choices}" var="choice">
+                    <spring:url value="/send/${choice.id}" var="sendUrl" />
+                    <div class="btn btn-success" onclick="session();location.href='${sendUrl}';">
+                            ${choice.caption}
+                        <div class="ldld full">
+                            <p>Wait other player</p>
+                        </div>
+                    </div>
+                </c:forEach>
+                <c:if test="${scene.type == 'Result'}">
+                    <spring:url value="/leave" var="exit" />
+                    <div class="btn btn-success" onclick="location.href='${exit}';">Finish game</div>
+                </c:if>
+                <c:if test="${scene.type == 'Normal'}">
+                    <spring:url value="/next" var="next" />
+                    <div class="btn btn-success" onclick="location.href='${next}';">Continue</div>
+                </c:if>
+                <spring:url value="/leave" var="userUrl" />
+                <div class="close1" onclick="location.href='${userUrl}'"></div>
+            </div>
+        </div>
+    </body>
 </html>

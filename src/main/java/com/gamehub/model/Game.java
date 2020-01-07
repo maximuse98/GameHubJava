@@ -4,6 +4,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 @Table(name="games")
@@ -14,6 +15,7 @@ public class Game {
     private int id;
     private String name;
     private int playersCount;
+    private String colorTheme;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Fetch(FetchMode.JOIN)
@@ -24,6 +26,10 @@ public class Game {
     @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "startSceneId2")
     private Scene startScene2;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    private Set<Role> roles;
 
     public int getId() {
         return id;
@@ -63,6 +69,22 @@ public class Game {
 
     public void setStartScene2(Scene startScene2) {
         this.startScene2 = startScene2;
+    }
+
+    public String getColorTheme() {
+        return colorTheme;
+    }
+
+    public void setColorTheme(String colourTheme) {
+        this.colorTheme = colourTheme;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override

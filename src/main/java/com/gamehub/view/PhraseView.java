@@ -9,6 +9,10 @@ public class PhraseView {
         this.speech = speech;
     }
 
+    public PhraseView(String speech) {
+        this.speech = speech;
+    }
+
     public String getSpeaker() {
         return speaker;
     }

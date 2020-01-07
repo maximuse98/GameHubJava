@@ -14,6 +14,7 @@ public class User {
     private Scene currentScene;
     private Choice currentChoice;
     private boolean hasNewScene;
+    private String currentRole;
 
     private Future<String> currentFuture;
 
@@ -63,6 +64,14 @@ public class User {
         this.currentChoice = currentChoice;
     }
 
+    public String getCurrentRole() {
+        return currentRole;
+    }
+
+    public void setCurrentRole(String currentRole) {
+        this.currentRole = currentRole;
+    }
+
     public void clearSession() {
         if(currentFuture != null){
             currentFuture.cancel(true);
@@ -72,6 +81,7 @@ public class User {
         this.hasNewScene = false;
         this.currentChoice = null;
         this.currentFuture = null;
+        this.currentRole = null;
     }
 
     public boolean hasNewScene() {
