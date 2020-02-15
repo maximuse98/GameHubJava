@@ -38,6 +38,11 @@
 		<location>/error</location>
 	</error-page>
 
+	<error-page>
+		<exception-type>com.gamehub.exception.NotFoundException</exception-type>
+		<location>/error</location>
+	</error-page>
+
 	<!-- Processes application requests -->
 	<servlet>
 		<servlet-name>appServlet</servlet-name>

@@ -12,7 +12,7 @@ public class ErrorController {
 
     @RequestMapping(value = "/error", method = RequestMethod.GET)
     public String renderErrorPage(HttpServletRequest httpRequest, Model model) {
-        String errorMsg = "";
+        String errorMsg;
         int httpErrorCode = getErrorCode(httpRequest);
 
         switch (httpErrorCode) {
@@ -31,6 +31,9 @@ public class ErrorController {
             case 500: {
                 errorMsg = "Http Error Code: 500. Internal Server Error";
                 break;
+            }
+            default:{
+                errorMsg = "";
             }
         }
         model.addAttribute("errorMsg", errorMsg);

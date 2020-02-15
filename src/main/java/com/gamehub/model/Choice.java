@@ -22,9 +22,6 @@ public class Choice {
     private String caption;
     private int matrixNum;
 
-    @Transient
-    private int jsonId;
-
     public int getId() {
         return id;
     }
@@ -55,14 +52,6 @@ public class Choice {
 
     public void setMatrixNum(int matrixNum) {
         this.matrixNum = matrixNum;
-    }
-
-    public int getJsonId() {
-        return jsonId;
-    }
-
-    public void setJsonId(int jsonId) {
-        this.jsonId = jsonId;
     }
 
     @Override

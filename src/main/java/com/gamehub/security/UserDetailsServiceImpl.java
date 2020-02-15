@@ -1,6 +1,7 @@
-package com.gamehub.service;
+package com.gamehub.security;
 
 import com.gamehub.entity.UserEntity;
+import com.gamehub.service.UserService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,6 +27,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         Set<GrantedAuthority> roles = new HashSet<>();
         roles.add(new SimpleGrantedAuthority(user.getUserRole().name()));
 
-        return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), roles);
+        //return new org.springframework.security.core.userdetails.User(user.getLogin(), user.getPassword(), roles);
+        return new UserDetailsImpl(user.getLogin(), user.getPassword(), roles);
     }
 }

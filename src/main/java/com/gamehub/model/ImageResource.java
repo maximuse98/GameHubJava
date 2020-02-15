@@ -1,8 +1,5 @@
 package com.gamehub.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 import java.sql.Blob;
 

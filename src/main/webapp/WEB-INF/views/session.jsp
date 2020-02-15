@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: maxim
-  Date: 01.10.2019
-  Time: 12:17
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
@@ -23,55 +16,38 @@
         <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/ldld.css"/>
         <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/loading.min.css"/>
 
+        <link rel="icon" type="image/png" href="${contextPath}/resources/imgs/icons/game_1.ico"/>
+
         <script src="${contextPath}/resources/js/ldld.js"></script>
         <script src="${contextPath}/resources/js/session.js"></script>
     </head>
-    <body onload="setFooterColor('${gameColor}')">
-        <div id="bg" >
-            <img src="/image/background" alt=""/>
-        </div>
+    <body onload="setFooterColor('${gameColor}'); splitText('${scene.text}','${scene.ids}','${scene.speakers}','${scene.sprites}','${scene.backgrounds}','${scene.lastSceneType}');">
+        <div id="background" ></div>
 
         <header>
             <h1>${gameName}</h1>
-            <div class="usrnm">
-                <div class="login">${pageContext.request.userPrincipal.name} - ${userRole}</div>
+            <div class="username">
+                <div class="login">${pageContext.request.userPrincipal.name}</div>
             </div>
         </header>
 
-        <div id="sprite">
-            <c:forEach items="${scene.sprites}" var="sprite">
-                <img src="/image/sprite/${sprite.id}" alt="image"/>
-            </c:forEach>
-        </div>
+        <div id="sprite"></div>
 
         <div class="footer" id="ftr" style="background-color: ${gameColor};">
-            <c:if test="${scene.speaker != null}">
-                <div class="footer2" style="background-color: ${gameColor};">${scene.speaker}</div>
-            </c:if>
-            <c:forEach items="${scene.phrases}" var="phrase">
-                <p>${phrase.speech}</p>
-            </c:forEach>
-            <div class="chs">
-                <c:forEach items="${scene.choices}" var="choice">
-                    <spring:url value="/send/${choice.id}" var="sendUrl" />
-                    <div class="btn btn-success" onclick="session();location.href='${sendUrl}';">
-                            ${choice.caption}
+            <div id ="speaker" class="footer2" style="background-color: ${gameColor};"></div>
+            <p id="text"></p>
+            <div class="chs" id="choice">
+                <c:forEach items="${scene.choices}" var="choise">
+                    <div class="btn btn-success" style="display: none" onclick="session();window.location.href='/send/${choise.id}';">
+                            ${choise.caption}
                         <div class="ldld full">
                             <p>Wait other player</p>
                         </div>
                     </div>
                 </c:forEach>
-                <c:if test="${scene.type == 'Result'}">
-                    <spring:url value="/leave" var="exit" />
-                    <div class="btn btn-success" onclick="location.href='${exit}';">Finish game</div>
-                </c:if>
-                <c:if test="${scene.type == 'Normal'}">
-                    <spring:url value="/next" var="next" />
-                    <div class="btn btn-success" onclick="location.href='${next}';">Continue</div>
-                </c:if>
-                <spring:url value="/leave" var="userUrl" />
-                <div class="close1" onclick="location.href='${userUrl}'"></div>
+                <div class="btn btn-success" id ="continue" onclick="nextPhrase();">Continue</div>
             </div>
+            <div class="closeIcon" onclick="window.location.href='/leave';"></div>
         </div>
     </body>
 </html>

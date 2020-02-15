@@ -1,23 +1,11 @@
 package com.gamehub.view;
 
-import com.gamehub.controller.GameSession;
-import com.gamehub.model.Game;
-
 public class SessionView {
     private int id;
     private String gameName;
     private String creatorUsername;
     private int gameSize;
     private int usersCount;
-
-    public SessionView(GameSession gameSession) {
-        Game game = gameSession.getGame();
-        this.id = gameSession.getId();
-        this.gameName = game.getName();
-        this.creatorUsername = gameSession.getCreator().getUsername();
-        this.gameSize = game.getPlayersCount();
-        this.usersCount = gameSession.getUsersCount() + gameSession.getExitUsersCount();
-    }
 
     public int getId() {
         return id;
@@ -37,5 +25,25 @@ public class SessionView {
 
     public int getUsersCount() {
         return usersCount;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setGameName(String gameName) {
+        this.gameName = gameName;
+    }
+
+    public void setCreatorUsername(String creatorUsername) {
+        this.creatorUsername = creatorUsername;
+    }
+
+    public void setGameSize(int gameSize) {
+        this.gameSize = gameSize;
+    }
+
+    public void setUsersCount(int usersCount) {
+        this.usersCount = usersCount;
     }
 }

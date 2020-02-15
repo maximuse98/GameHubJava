@@ -53,9 +53,7 @@
         <beans:constructor-arg name="strength" value="${round}" />
     </beans:bean>
 
-    <beans:bean id="myAuthenticationSuccessHandler" class="com.gamehub.security.CustomAuthenticationSuccessHandler" >
-        <beans:property name="userService" ref="userService"/>
-    </beans:bean>
+    <beans:bean id="myAuthenticationSuccessHandler" class="com.gamehub.security.CustomAuthenticationSuccessHandler" />
 
     <global-method-security pre-post-annotations="enabled"/>
 

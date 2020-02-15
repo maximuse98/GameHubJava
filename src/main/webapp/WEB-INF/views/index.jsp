@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: maxim
-  Date: 16.11.2019
-  Time: 13:46
-  To change this template use File | Settings | File Templates.
---%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -23,16 +16,19 @@
 
     <title>GameHub</title>
 
+    <link rel="icon" type="image/png" href="${contextPath}/resources/imgs/icons/game_1.ico"/>
+
     <link href="${contextPath}/resources/css/bootstrap.min.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/common.css" rel="stylesheet">
     <link href="${contextPath}/resources/css/index.css" rel="stylesheet">
-</head>
 
-<c:url var="login" value="/j_spring_security_check" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
+</head>
 
 <body>
     <div class="container">
-        <form:form action="${login}" method="POST" class="form-signin">
+        <form:form action="/j_spring_security_check" method="POST" class="form-signin">
             <h2 class="form-heading">Login</h2>
             <c:if test="${not empty message}">
                 <div class="logout">${message}</div>
@@ -43,16 +39,10 @@
                 <c:if test="${not empty error}">
                     <span>${error}</span>
                 </c:if>
-                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                 <button type="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
             </div>
         </form:form>
-
         <h4 class="text-center"><a href="${contextPath}/registry">Create an account</a></h4>
-
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-        <script src="${contextPath}/resources/js/bootstrap.min.js"></script>
     </div>
 </body>
-
 </html>

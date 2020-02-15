@@ -19,18 +19,14 @@ public class UserDAOImpl implements UserDAO {
         this.sessionFactory = sf;
     }
 
-    @Override
     @Transactional
     public void addUser(UserEntity user) {
         Session session = sessionFactory.openSession();
         session.beginTransaction();
-
         session.save(user);
-
         session.getTransaction().commit();
     }
 
-    @Override
     public UserEntity getUser(String username) throws NullPointerException {
         Session session = this.sessionFactory.getCurrentSession();
 
@@ -40,13 +36,8 @@ public class UserDAOImpl implements UserDAO {
             userEntity = (UserEntity) query.get(0);
         }
         catch (IndexOutOfBoundsException e){
-            throw new UsernameNotFoundException("");
+            throw new UsernameNotFoundException("User not found");
         }
         return userEntity;
-    }
-
-    @Override
-    public void deleteUser(UserEntity user) {
-
     }
 }

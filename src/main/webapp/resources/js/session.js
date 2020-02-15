@@ -1,5 +1,101 @@
+var text;
+var textP;
+var speakerP;
+var i = 0;
+var sceneIds;
+var sceneSpeakers;
+var sceneSprites;
+var sceneBackgrounds;
+var lastSceneType;
+
 function session(){
     (new ldLoader({root: ".ldld.full"})).on();
+}
+
+function splitText(txt, ids, speakers, sprts, bgr, sctp){
+    textP = document.getElementById('text');
+    speakerP = document.getElementById('speaker');
+
+    text = txt.split("|");
+    sceneIds = ids.split("|");
+    sceneSpeakers = speakers.split("|");
+    sceneSprites = sprts.split("|");
+    sceneBackgrounds = bgr.split("|");
+
+    lastSceneType =sctp;
+
+    nextPhrase();
+    setBackground(sceneIds[i]);
+}
+
+function nextPhrase(){
+    textP.innerHTML = window.text[i];
+    speakerP.innerHTML = window.sceneSpeakers[i];
+    window.sceneSpeakers[i] === "." ? speakerP.style.display = 'none' : speakerP.style.display = 'inline-block';
+
+    if( i!==0 && sceneBackgrounds[i-1] !== sceneBackgrounds[i]) {
+        setBackground(sceneIds[i]);
+    }
+    setSprites(sceneSprites[i], sceneIds[i]);
+
+    if(window.text[i+1] === undefined){
+        var choices = document.getElementById('choice').childNodes;
+        choices.forEach(function (choice) {
+            choice.nodeType === 1 ? choice.style.display = "inline-block" : true});
+        document.getElementById('continue').style.display = 'none';
+        if (lastSceneType === 'Result'){
+            var button = createExitButton();
+            document.getElementById('choice').appendChild(button);
+        }
+    }
+    i++;
+}
+
+function setBackground(id) {
+    var background = document.getElementById("background");
+    while (background.firstChild) {
+        background.removeChild(background.firstChild);
+    }
+    var img = document.createElement("img");
+    img.src = "/image/background?scene_id=" + id;
+    background.appendChild(img);
+}
+
+function setSprites(sp,id) {
+    var background = document.getElementById("sprite");
+    while (background.firstChild) {
+        background.removeChild(background.firstChild);
+    }
+    var sprites = sp.split(",");
+    sprites.forEach(function (sprite) {
+        var img = document.createElement("img");
+        img.src = "/image/sprite?id=" + sprite + "&scene_id=" +id;
+        background.appendChild(img);
+    });
+}
+
+/*
+function createNextSceneButton() {
+    var next = document.createElement("div");
+    next.className = "btn btn-success";
+    next.id = "next";
+    next.innerHTML = 'Continue2';
+    next.onclick = function () {
+        window.location.href = '/next';
+    };
+    return next;
+}
+*/
+
+function createExitButton() {
+    var exit = document.createElement("div");
+    exit.className = "btn btn-success";
+    exit.id = "exit";
+    exit.innerHTML = 'Finish game';
+    exit.onclick = function () {
+        window.location.href = '/leave';
+    };
+    return exit;
 }
 
 function setFooterColor(bgColor){
@@ -79,12 +175,12 @@ function RGBToHSL(r,g,b) {
     b /= 255;
 
     // Find greatest and smallest channel values
-    cmin = Math.min(r,g,b),
-        cmax = Math.max(r,g,b),
-        delta = cmax - cmin,
-        h = 0,
-        s = 0,
-        l = 0;
+    cmin = Math.min(r,g,b);
+    cmax = Math.max(r,g,b);
+    delta = cmax - cmin;
+    h = 0;
+    s = 0;
+    l = 0;
 
     // Calculate hue
     // No difference

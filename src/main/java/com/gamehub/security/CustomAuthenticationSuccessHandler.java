@@ -1,8 +1,5 @@
 package com.gamehub.security;
 
-import com.gamehub.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.DefaultRedirectStrategy;
@@ -17,15 +14,7 @@ import java.io.IOException;
 import java.util.Collection;
 
 public class CustomAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
-
-    private UserService userService;
     private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
-
-    @Autowired
-    @Qualifier(value="userService")
-    public void setUserService(UserService us){
-        this.userService = us;
-    }
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -46,7 +35,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         for (GrantedAuthority grantedAuthority : authorities) {
             if (grantedAuthority.getAuthority().equals("ROLE_USER")) {
-                userService.createUser(authentication.getName());
+                //userService.addUser((UserDetailsImpl) authentication.getPrincipal());
                 return "/games";
             } else if (grantedAuthority.getAuthority().equals("ROLE_ADMIN")) {
                 return "/upload";

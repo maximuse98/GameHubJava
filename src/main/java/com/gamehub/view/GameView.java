@@ -1,17 +1,10 @@
 package com.gamehub.view;
 
-import com.gamehub.model.Game;
-
 public class GameView {
     private int id;
     private String name;
     private int playersCount;
-
-    public GameView(Game game) {
-        this.id = game.getId();
-        this.name = game.getName();
-        this.playersCount = game.getPlayersCount();
-    }
+    private String color;
 
     public int getId() {
         return id;
@@ -23,5 +16,25 @@ public class GameView {
 
     public int getPlayersCount() {
         return playersCount;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setPlayersCount(int playersCount) {
+        this.playersCount = playersCount;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColour(String colour) {
+        this.color = colour;
     }
 }

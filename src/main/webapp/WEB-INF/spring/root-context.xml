@@ -41,7 +41,7 @@
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.show_sql">false</prop>
 			</props>
 		</property>
 	</bean>
@@ -49,20 +49,25 @@
 	<bean id="gameDAO" class="com.gamehub.dao.GameDAOImpl">
 		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</bean>
+
 	<bean id="userDAO" class="com.gamehub.dao.UserDAOImpl">
 		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</bean>
 
 	<bean id="gameService" class="com.gamehub.service.GameServiceImpl">
 		<property name="gameDAO" ref="gameDAO"/>
+		<property name="viewService" ref="viewService" />
 	</bean>
 
 	<bean id="userService" class="com.gamehub.service.UserServiceImpl">
 		<property name="userDAO" ref="userDAO"/>
 	</bean>
 
-	<bean id="gameParserService" class="com.gamehub.service.GameParserServiceImpl"/>
-	<bean id="userDetailsService" class="com.gamehub.service.UserDetailsServiceImpl">
+	<bean id="viewService" class="com.gamehub.service.ViewService"/>
+	<bean id="sessionService" class="com.gamehub.service.SessionService"/>
+	<bean id="gameParserService" class="com.gamehub.service.GameParserService"/>
+
+	<bean id="userDetailsService" class="com.gamehub.security.UserDetailsServiceImpl">
 		<property name="userService" ref="userService"/>
 	</bean>
 

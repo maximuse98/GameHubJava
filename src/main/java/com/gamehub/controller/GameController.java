@@ -1,46 +1,37 @@
 package com.gamehub.controller;
 
 import com.gamehub.entity.UserEntity;
-import com.gamehub.service.GameParserService;
-import com.gamehub.view.SceneView;
-import com.gamehub.model.User;
-import com.gamehub.service.UserService;
 import com.gamehub.service.GameService;
-
+import com.gamehub.service.SessionService;
+import com.gamehub.service.UserService;
+import com.gamehub.view.GameView;
 import com.gamehub.view.UserView;
-import org.hibernate.exception.ConstraintViolationException;
-import org.json.simple.parser.ParseException;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.acls.model.NotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.*;
 import java.security.Principal;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 @Controller
 public class GameController {
 	
 	private GameService gameService;
 	private UserService userService;
-	private GameParserService gameParserService;
+	private SessionService sessionService;
 
 	private static final String LOGIN_URL = "redirect:/login";
 	private static final String USER_MAIN_URL = "redirect:/games";
 	private static final String USER_SESSION_URL = "redirect:/game";
-	private static final String ADMIN_URL = "redirect:/upload";
 
 	@Autowired
 	@Qualifier(value="userService")
@@ -54,13 +45,16 @@ public class GameController {
 		this.gameService = gs;
 	}
 
-    @Autowired
-    @Qualifier(value="gameParserService")
-    public void setGameParserService(GameParserService ps){this.gameParserService = ps;}
+	@Autowired
+	@Qualifier(value = "sessionService")
+	public void setSessionService(SessionService sessionService) {
+		this.sessionService = sessionService;
+	}
 
 
 	@RequestMapping(value = {"/login", "/"})
-	public String loginPage(@RequestParam(value = "status", required = false) String status, Model model){
+	public String loginPage(@RequestParam(value = "status", required = false) String status, Model model,Principal principal){
+	    if(principal != null) return USER_MAIN_URL;
 		if(status != null){
 			switch (status) {
 				case "created":
@@ -79,7 +73,8 @@ public class GameController {
 	}
 
 	@RequestMapping(value = "/registry", method = RequestMethod.GET)
-	public String registerPage(Model model){
+	public String registerPage(Model model, Principal principal){
+        if(principal != null) return USER_MAIN_URL;
 		model.addAttribute("user",new UserView());
 		return "register";
 	}
@@ -103,103 +98,64 @@ public class GameController {
 	}
 
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
-	public String mainPage(Model model){
+	public String mainPage(Model model, Principal principal){
+		if (sessionService.isUserExist(principal.getName())) return USER_SESSION_URL;
+
+	    model.addAttribute("username", principal.getName());
 		model.addAttribute("listGames", gameService.getGameViews());
-        model.addAttribute("listSessions",userService.getSessionViews());
-        model.addAttribute("listUsers", userService.getUserViews());
+        model.addAttribute("listSessions", sessionService.getSessionViews());
+        model.addAttribute("listUsers", sessionService.getUserViews());
 		return "game";
 	}
 	
 	@RequestMapping(value = "/start/{gameId}", method = RequestMethod.GET)
     public String startNewSession(@PathVariable("gameId") int id, Principal principal){
-	    userService.createSession(principal.getName(),gameService.getGame(id));
+		sessionService.createSession(principal.getName(), gameService.getGame(id));
 		return USER_SESSION_URL;
     }
 
-	@RequestMapping(value = "/next", method = RequestMethod.GET)
-	public String setNextScene(Principal principal){
-		userService.setNewScene(principal.getName());
-		return USER_SESSION_URL;
-	}
-
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     public String getScene(Model model, Principal principal){
-        User user = userService.getUser(principal.getName());
+		if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
+        GameView gameView = sessionService.getGameView(principal.getName());
 
-        model.addAttribute("scene", new SceneView(user.getCurrentScene()));
-        model.addAttribute("gameName", user.getCurrentSession().getGame().getName());
-        model.addAttribute("gameColor", user.getCurrentSession().getGame().getColorTheme());
-        model.addAttribute("userRole", user.getCurrentRole());
+        model.addAttribute("scene", sessionService.getSceneView(principal.getName()));
+        model.addAttribute("gameName", gameView.getName());
+        model.addAttribute("gameColor",gameView.getColor());
+        model.addAttribute("userRole", "RoleExample");
 
         return "session";
     }
 
     @RequestMapping(value = "/leave", method = RequestMethod.GET)
-    public String leaveSession(Principal principal){
-	    userService.leaveSession(principal.getName());
-		return USER_MAIN_URL;
-    }
-
-    @RequestMapping(value = "/exit", method = RequestMethod.POST)
-    public String exitUser(Model model, HttpServletRequest request){
-	    userService.removeUser(request.getUserPrincipal().getName());
-		model.addAttribute("logout",true);
-		return "game";
+    public String leaveSession(Principal principal, Model model){
+		sessionService.leaveSession(principal.getName());
+        model.addAttribute("logout", true);
+        return USER_MAIN_URL;
     }
 
 	@RequestMapping(value = "/connect/{sessionId}", method = RequestMethod.GET)
-	public String addUserToSession(@PathVariable("sessionId") int sessionId, HttpServletRequest request){
-	    GameSession session = userService.getSession(sessionId).orElseThrow(()-> new NotFoundException("Session not found"));
-	    if(session.getGameSize()<=session.getUsersCount()){
-	        return USER_MAIN_URL;
-	    }
-	    userService.addUserToSession(request.getUserPrincipal().getName(), sessionId);
+	public String addUserToSession(@PathVariable("sessionId") int sessionId, Principal principal){
+	    sessionService.addUserToSession(principal.getName(), sessionId);
         return USER_SESSION_URL;
 	}
 
 	@RequestMapping(value = "/send/{choiceId}", method = RequestMethod.GET)
 	public String sendAnswer(@PathVariable("choiceId") int choiceId, Principal principal) throws ExecutionException, InterruptedException {
-		User user = userService.getUser(principal.getName());
-		if(user.hasNewScene()){
-			return USER_SESSION_URL;
-		}
-		user.getChoice(choiceId).orElseThrow(()-> new NotFoundException("Choice not found"));
-
-		Future<String> currentFuture = user.getCurrentFuture();
-		if(currentFuture == null){
-			Future<String> newFuture = user.doAsync(choiceId,USER_SESSION_URL);
-			user.setCurrentFuture(newFuture);
-			return newFuture.get();
-		}
-		return currentFuture.get();
+		if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
+		if(sessionService.addChoice(principal.getName(),choiceId).get()){
+            return USER_SESSION_URL;
+        }
+        throw new NullPointerException();
 	}
 
-	@RequestMapping(value = "/image/sprite/{spriteId}", produces = MediaType.IMAGE_PNG_VALUE)
-	public ResponseEntity<byte[]> getSprite(@PathVariable("spriteId") int id, Principal principal) throws SQLException {
-	    return userService.getUserSprite(principal.getName(), id);
+	@RequestMapping(value = "/image/sprite", produces = MediaType.IMAGE_PNG_VALUE)
+	public ResponseEntity<byte[]> getSprite(@RequestParam int scene_id, @RequestParam int id, Principal principal) throws SQLException {
+	    return sessionService.getUserSprite(principal.getName(),id,scene_id);
 	}
 
 	@RequestMapping(value = "/image/background", produces = MediaType.IMAGE_JPEG_VALUE)
-	public ResponseEntity<byte[]> getBackground(Principal principal) throws SQLException {
-		return userService.getUserBackground(principal.getName());
-    }
-
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String uploadFile(@RequestParam("game") MultipartFile file, @RequestParam("images") MultipartFile[] images) throws IOException, ParseException, SQLException {
-		gameParserService.parse(file,images);
-		gameService.addGame(gameParserService.getGame());
-		return ADMIN_URL;
-	}
-
-	@RequestMapping(value = "/upload", method = RequestMethod.GET)
-	public String getUploadPage(Model model){
-        model.addAttribute("listGames", gameService.getGameViews());
-		return "load";
-	}
-
-    @RequestMapping(value = "/delete/{gameId}", method = RequestMethod.GET)
-	public String deleteGame(@PathVariable("gameId") int gameId){
-	    gameService.removeGame(gameId);
-        return ADMIN_URL;
+	public ResponseEntity<byte[]> getBackground(Principal principal, @RequestParam int scene_id) throws SQLException {
+		return sessionService.getUserBackground(principal.getName(),scene_id);
     }
 }

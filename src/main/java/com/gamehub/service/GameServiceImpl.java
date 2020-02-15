@@ -1,82 +1,76 @@
 package com.gamehub.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import com.gamehub.dao.GameDAO;
 import com.gamehub.model.Choice;
 import com.gamehub.model.Game;
 import com.gamehub.model.MatrixVariant;
+import com.gamehub.model.Scene;
 import com.gamehub.view.GameView;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.gamehub.dao.GameDAO;
 
 @Service
 public class GameServiceImpl implements GameService {
-	
+
 	private GameDAO gameDAO;
+	private ViewService viewService;
 
 	public void setGameDAO(GameDAO gameDAO) {
 		this.gameDAO = gameDAO;
 	}
 
-	@Override
+	public void setViewService(ViewService viewService) {
+		this.viewService = viewService;
+	}
+
 	@Transactional
 	public void addGame(Game p) {
 		this.gameDAO.addGame(p);
 	}
 
-	@Override
 	@Transactional
 	public void updateGame(Game p) {
 		this.gameDAO.updateGame(p);
 	}
 
-	@Override
-	@Transactional
-	public List<Game> listGames() {
-		return this.gameDAO.listGames();
-	}
-
-	@Override
-	@Transactional
-	public List<GameView> getGameViews(){
-		List<Game> games = this.listGames();
-		List<GameView> gameViews = new ArrayList<>(games.size());
-		for (Game game:games) {
-			gameViews.add(new GameView(game));
-		}
-		return gameViews;
-	}
-
-	@Override
 	@Transactional
 	public Game getGame(int id) {
 		return this.gameDAO.getGameById(id);
 	}
 
-	@Override
 	@Transactional
 	public void removeGame(int id) {
 		this.gameDAO.removeGame(id);
 	}
 
-	@Override
 	@Transactional
 	public void removeGame(Game game) {
 		this.gameDAO.removeGame(game);
 	}
 
-	@Override
 	@Transactional
-    public Choice getChoice(int id) {
-        return this.gameDAO.getChoiceById(id);
+    public Choice getChoice(Scene scene, int id) {
+        while(!scene.getType().equals("Quest")){
+        	scene = scene.getNextScene();
+        	if (scene == null) throw new NullPointerException();
+		}
+		for (Choice choice:scene.getChoices()) {
+			if (choice.getId() == id) return choice;
+		}
+		throw new NullPointerException();
     }
 
-    @Override
 	@Transactional
     public MatrixVariant getVariant(String matrixPosition) {
         return this.gameDAO.getVariantByPosition(matrixPosition);
     }
+
+    @Transactional
+    public List<GameView> getGameViews(){
+		List<Game> games = this.gameDAO.listGames();
+		return viewService.createGameViews(games);
+	}
 }

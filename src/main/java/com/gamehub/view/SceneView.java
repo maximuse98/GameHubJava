@@ -1,58 +1,87 @@
 package com.gamehub.view;
 
-import com.gamehub.model.Choice;
-import com.gamehub.model.Scene;
-import com.gamehub.model.Sprite;
-
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class SceneView {
-    private Set<SpriteView> sprites;
-    private Set<ChoiceView> choices;
-    private List<PhraseView> phrases;
+    private String ids;
+    private String speakers;
+    private String sprites;
+    private String text;
     private String type;
-    private String speaker;
+    private String backgrounds;
+    private String lastSceneType;
+    private Set<ChoiceView> choices;
 
-    public SceneView(Scene scene){
-        sprites = new HashSet<>();
+    public SceneView() {
         choices = new HashSet<>();
-        phrases = new ArrayList<>();
-        this.type = scene.getType();
-        this.speaker = scene.getSpeaker();
-        for (Sprite sprite:scene.getSprites()) {
-            sprites.add(new SpriteView(sprite));
-        }
-        for (Choice choice:scene.getChoices()) {
-            choices.add(new ChoiceView(choice));
-        }
-        String[] text = scene.getText().split("[|]");
-        for(int i=0;i<text.length;){
-            try {
-                phrases.add(new PhraseView(text[i++]));
-            } catch (NullPointerException ignored){}
-        }
     }
 
-    public Set<SpriteView> getSprites() {
-        return sprites;
+    public String getIds() {
+        return ids;
+    }
+
+    public void setIds(String ids) {
+        this.ids = ids;
+    }
+
+    public String getSpeakers() {
+        return speakers;
+    }
+
+    public void setSpeakers(String speakers) {
+        this.speakers = speakers;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 
     public Set<ChoiceView> getChoices() {
         return choices;
     }
 
-    public List<PhraseView> getPhrases() {
-        return phrases;
+    public void setChoices(Set<ChoiceView> choices) {
+        this.choices = choices;
+    }
+
+    public String getSprites() {
+        return sprites;
+    }
+
+    public void setSprites(String sprite) {
+        this.sprites = sprite;
+    }
+
+    public void addChoice(ChoiceView choiceView){
+        choices.add(choiceView);
     }
 
     public String getType() {
         return type;
     }
 
-    public String getSpeaker() {
-        return speaker;
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getBackgrounds() {
+        return backgrounds;
+    }
+
+    public void setBackgrounds(String backgrounds) {
+        this.backgrounds = backgrounds;
+    }
+
+    public String getLastSceneType() {
+        return lastSceneType;
+    }
+
+    public void setLastSceneType(String lastSceneType) {
+        this.lastSceneType = lastSceneType;
     }
 }
