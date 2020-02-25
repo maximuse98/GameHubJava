@@ -28,13 +28,13 @@
 		<property name="dataSource" ref="dataSource" />
 		<property name="annotatedClasses">
 			<list>
-				<value>com.gamehub.model.Choice</value>
-				<value>com.gamehub.model.Game</value>
-				<value>com.gamehub.model.ImageResource</value>
-				<value>com.gamehub.model.MatrixVariant</value>
-				<value>com.gamehub.model.Scene</value>
-				<value>com.gamehub.model.Sprite</value>
-				<value>com.gamehub.model.Role</value>
+				<value>com.gamehub.entity.ChoiceEntity</value>
+				<value>com.gamehub.entity.GameEntity</value>
+				<value>com.gamehub.entity.ImageResourceEntity</value>
+				<value>com.gamehub.entity.MatrixVariantEntity</value>
+				<value>com.gamehub.entity.SceneEntity</value>
+				<value>com.gamehub.entity.SpriteEntity</value>
+				<value>com.gamehub.entity.RoleEntity</value>
 				<value>com.gamehub.entity.UserEntity</value>
 			</list>
 		</property>

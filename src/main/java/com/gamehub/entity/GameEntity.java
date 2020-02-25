@@ -1,30 +1,35 @@
-package com.gamehub.model;
+package com.gamehub.entity;
 
-import com.gamehub.entity.GameEntity;
 import com.gamehub.view.GameView;
 import com.gamehub.view.View;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
+import javax.persistence.*;
 import java.util.Set;
 
-
-public class Game implements Model {
-
+@Entity
+@Table(name="games")
+public class GameEntity {
+    @Id
+    @Column(name="id", updatable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     private String name;
     private int playersCount;
     private String colorTheme;
-    private Scene startScene1;
-    private Scene startScene2;
-    private Set<Role> roles;
 
-    public Game(GameEntity entity) {
-        this.id = entity.getId();
-        this.name = entity.getName();
-        this.playersCount = entity.getPlayersCount();
-        this.colorTheme = entity.getColorTheme();
-        this.startScene1 = new Scene(entity.getStartScene1());
-        this.startScene2 = new Scene(entity.getStartScene2());
-    }
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "startSceneId1")
+    private SceneEntity startScene1;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "startSceneId2")
+    private SceneEntity startScene2;
+
+    @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
+    private Set<RoleEntity> roles;
 
     public int getId() {
         return id;
@@ -50,19 +55,19 @@ public class Game implements Model {
         this.playersCount = playersCount;
     }
 
-    public Scene getStartScene1() {
+    public SceneEntity getStartScene1() {
         return startScene1;
     }
 
-    public void setStartScene1(Scene startScene1) {
+    public void setStartScene1(SceneEntity startScene1) {
         this.startScene1 = startScene1;
     }
 
-    public Scene getStartScene2() {
+    public SceneEntity getStartScene2() {
         return startScene2;
     }
 
-    public void setStartScene2(Scene startScene2) {
+    public void setStartScene2(SceneEntity startScene2) {
         this.startScene2 = startScene2;
     }
 
@@ -74,7 +79,7 @@ public class Game implements Model {
         this.colorTheme = colourTheme;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(Set<RoleEntity> roles) {
         this.roles = roles;
     }
 
@@ -89,7 +94,6 @@ public class Game implements Model {
                 '}';
     }
 
-    @Override
     public View createView() {
         return new GameView(id,name,playersCount,colorTheme);
     }

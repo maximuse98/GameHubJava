@@ -97,7 +97,7 @@ public class GameSession implements Model {
 
         Iterator<User> iterator = users.iterator();
         User user1 = iterator.next();
-        Set<MatrixVariant> matrixVariants = user1.getChoice().getScene().getMatrixVariantList();
+        List<MatrixVariant> matrixVariants = user1.getChoice().getScene().getMatrixVariantList();
 
         for (MatrixVariant matrixVariant: matrixVariants){
             if(matrixVariant.getMatrixPosition().equals(matrixPosition)){

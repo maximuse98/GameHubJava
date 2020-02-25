@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.gamehub.dao.GameDAO;
+import com.gamehub.entity.GameEntity;
+import com.gamehub.entity.MatrixVariantEntity;
 import com.gamehub.model.Choice;
 import com.gamehub.model.Game;
-import com.gamehub.model.MatrixVariant;
 import com.gamehub.model.Scene;
 import com.gamehub.view.View;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,17 +21,17 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Transactional
-	public void addGame(Game p) {
+	public void addGame(GameEntity p) {
 		this.gameDAO.addGame(p);
 	}
 
 	@Transactional
-	public void updateGame(Game p) {
+	public void updateGame(GameEntity p) {
 		this.gameDAO.updateGame(p);
 	}
 
 	@Transactional
-	public Game getGame(int id) {
+	public GameEntity getGame(int id) {
 		return this.gameDAO.getGameById(id);
 	}
 
@@ -40,7 +41,7 @@ public class GameServiceImpl implements GameService {
 	}
 
 	@Transactional
-	public void removeGame(Game game) {
+	public void removeGame(GameEntity game) {
 		this.gameDAO.removeGame(game);
 	}
 
@@ -57,15 +58,20 @@ public class GameServiceImpl implements GameService {
     }
 
 	@Transactional
-    public MatrixVariant getVariant(String matrixPosition) {
+    public MatrixVariantEntity getVariant(String matrixPosition) {
         return this.gameDAO.getVariantByPosition(matrixPosition);
     }
 
-    @Transactional
+	@Transactional
+	public Game getGameModel(int id) {
+		return new Game(this.getGame(id));
+	}
+
+	@Transactional
     public List<View> getGameViews(){
-		List<Game> games = this.gameDAO.listGames();
+		List<GameEntity> games = this.gameDAO.listGames();
 		List<View> views = new ArrayList<>(games.size());
-		for (Game game:games) {
+		for (GameEntity game:games) {
 			views.add(game.createView());
 		}
 		return views;

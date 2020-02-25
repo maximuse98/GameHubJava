@@ -20,15 +20,18 @@ public class SessionService {
     private List<User> users = new LinkedList<>();
 
     private GameService gameService;
+    private Provider<User> userProvider;
 
     @Autowired
-    public void setGameService(GameService gameService){
+    public void prepare(GameService gameService, Provider<User> userProvider){
         this.gameService = gameService;
+        this.userProvider = userProvider;
     }
 
     public void createSession(String username, Game game){
         if(isUserExist(username)) return;
-        User user = new User(username, game.getStartScene1());
+
+        User user = userProvider.get();
         user.setName(username);
         user.setScene(game.getStartScene1());
         users.add(user);
@@ -39,7 +42,8 @@ public class SessionService {
 
     public void addUserToSession(String username, int sessionId){
         if(isUserExist(username)) return;
-        User user = new User(username);
+
+        User user = userProvider.get();
         user.setName(username);
         GameSession session = findSession(sessionId);
 
@@ -49,8 +53,8 @@ public class SessionService {
         }
     }
 
-    public Future<Boolean> addChoice(String username, int choiceId){
-        User user = findUser(username);
+    public Future<Boolean> addChoice(int choiceId){
+        User user = userProvider.get();
         Choice choice = gameService.getChoice(user.getScene(), choiceId);
 
         user.getGameSession().addAnswer(user, choice);
@@ -69,7 +73,7 @@ public class SessionService {
     public void leaveSession(String username){
         if(!isUserExist(username)) return;
 
-        User user = findUser(username);
+        User user = userProvider.get();
         GameSession session = user.getGameSession();
 
         session.removeUser(user);
@@ -88,8 +92,8 @@ public class SessionService {
         }
     }
 
-    public ResponseEntity<byte[]> getUserBackground(String username, int sceneId) throws SQLException{
-        User user = findUser(username);
+    public ResponseEntity<byte[]> getUserBackground(int sceneId) throws SQLException{
+        User user = userProvider.get();
         Scene currentScene = user.getScene();
         Blob image = null;
         while(currentScene != null){
@@ -108,8 +112,8 @@ public class SessionService {
         headers.setContentType(MediaType.IMAGE_PNG);
         return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
     }
-    public ResponseEntity<byte[]> getUserSprite(String username, int spriteId, int sceneId) throws SQLException {
-        Blob image = getImage(spriteId, username, sceneId);
+    public ResponseEntity<byte[]> getUserSprite(int spriteId, int sceneId) throws SQLException {
+        Blob image = getImage(spriteId, sceneId);
         if(image == null){
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -121,10 +125,10 @@ public class SessionService {
         return new ResponseEntity<>(imageContent, headers, HttpStatus.OK);
     }
 
-    private Blob getImage(int id, String username, int sceneId){
-        User user = findUser(username);
+    private Blob getImage(int id, int sceneId){
+        User user = userProvider.get();
         Scene currentScene = user.getScene();
-        Set<Sprite> sprites = new HashSet<>();
+        List<Sprite> sprites = new LinkedList<>();
         while(currentScene != null){
             if(currentScene.getId() == sceneId){
                 sprites = currentScene.getSprites();
@@ -146,9 +150,9 @@ public class SessionService {
         }
         throw new NullPointerException();
     }
-    private User findUser(String username){
+    private void findUser(String username){
         for (User user: users){
-            if(user.getName().equals(username)) return user;
+            if(user.getName().equals(username)) return;
         }
         throw new NullPointerException();
     }
@@ -160,9 +164,8 @@ public class SessionService {
         return getViews(users);
     }
 
-    public View getViewByUser(String username, View view){
-        User user = findUser(username);
-        return view.createByUser(user);
+    public View getViewByUser(View view){
+        return view.createByUser(userProvider.get());
     }
     public List<View> getViews(List<? extends Model> models){
         List<View> views = new ArrayList<>(models.size());

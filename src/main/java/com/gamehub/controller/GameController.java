@@ -24,7 +24,6 @@ import java.util.concurrent.ExecutionException;
 
 @Controller
 public class GameController {
-	
 	private GameService gameService;
 	private UserService userService;
 	private SessionService sessionService;
@@ -34,20 +33,11 @@ public class GameController {
 	private static final String USER_SESSION_URL = "redirect:/game";
 
 	@Autowired
-	public void setUserService(UserService us){
-		this.userService = us;
-	}
-	
-	@Autowired
-	public void setGameService(GameService gs){
-		this.gameService = gs;
-	}
-
-	@Autowired
-	public void setSessionService(SessionService sessionService) {
+	public void prepare(UserService userService, GameService gameService, SessionService sessionService){
+		this.gameService = gameService;
+		this.userService = userService;
 		this.sessionService = sessionService;
 	}
-
 
 	@RequestMapping(value = {"/login", "/"})
 	public String loginPage(@RequestParam(value = "status", required = false) String status, Model model,Principal principal){
@@ -96,7 +86,7 @@ public class GameController {
 
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
 	public String mainPage(Model model, Principal principal){
-		if (sessionService.isUserExist(principal.getName())) return USER_SESSION_URL;
+		//if (sessionService.isUserExist(principal.getName())) return USER_SESSION_URL;
 
 	    model.addAttribute("username", principal.getName());
 		model.addAttribute("listGames", gameService.getGameViews());
@@ -107,16 +97,16 @@ public class GameController {
 	
 	@RequestMapping(value = "/start/{gameId}", method = RequestMethod.GET)
     public String startNewSession(@PathVariable("gameId") int id, Principal principal){
-		sessionService.createSession(principal.getName(), gameService.getGame(id));
+		sessionService.createSession(principal.getName(), gameService.getGameModel(id));
 		return USER_SESSION_URL;
     }
 
     @RequestMapping(value = "/game", method = RequestMethod.GET)
-    public String getScene(Model model, Principal principal){
-		if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
-        GameView gameView = (GameView) sessionService.getViewByUser(principal.getName(), new GameView());
+    public String getScene(Model model){
+		//if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
+        GameView gameView = (GameView) sessionService.getViewByUser(new GameView());
 
-        model.addAttribute("scene", sessionService.getViewByUser(principal.getName(), new SceneView()));
+        model.addAttribute("scene", sessionService.getViewByUser(new SceneView()));
         model.addAttribute("gameName", gameView.getName());
         model.addAttribute("gameColor",gameView.getColor());
         //model.addAttribute("userRole", "RoleExample");
@@ -140,19 +130,19 @@ public class GameController {
 	@RequestMapping(value = "/send/{choiceId}", method = RequestMethod.GET)
 	public String sendAnswer(@PathVariable("choiceId") int choiceId, Principal principal) throws ExecutionException, InterruptedException {
 		if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
-		if(sessionService.addChoice(principal.getName(),choiceId).get()){
+		if(sessionService.addChoice(choiceId).get()){
             return USER_SESSION_URL;
         }
         throw new NullPointerException();
 	}
 
 	@RequestMapping(value = "/image/sprite", produces = MediaType.IMAGE_PNG_VALUE)
-	public ResponseEntity<byte[]> getSprite(@RequestParam int scene_id, @RequestParam int id, Principal principal) throws SQLException {
-	    return sessionService.getUserSprite(principal.getName(),id,scene_id);
+	public ResponseEntity<byte[]> getSprite(@RequestParam int scene_id, @RequestParam int id) throws SQLException {
+	    return sessionService.getUserSprite(id,scene_id);
 	}
 
 	@RequestMapping(value = "/image/background", produces = MediaType.IMAGE_JPEG_VALUE)
-	public ResponseEntity<byte[]> getBackground(Principal principal, @RequestParam int scene_id) throws SQLException {
-		return sessionService.getUserBackground(principal.getName(),scene_id);
+	public ResponseEntity<byte[]> getBackground(@RequestParam int scene_id) throws SQLException {
+		return sessionService.getUserBackground(scene_id);
     }
 }

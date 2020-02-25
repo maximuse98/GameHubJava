@@ -1,24 +1,21 @@
-package com.gamehub.model;
-
-import com.gamehub.entity.ImageResourceEntity;
+package com.gamehub.entity;
 
 import javax.persistence.*;
 import java.sql.Blob;
 
-public class ImageResource {
-
+@Entity
+@Table(name="imageresources")
+public class ImageResourceEntity {
+    @Id
+    @Column(name="id", updatable = false)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
+
     private String path;
     private Blob image;
 
     @Transient
     private int jsonId;
-
-    public ImageResource(ImageResourceEntity entity) {
-        this.id = entity.getId();
-        this.path = entity.getPath();
-        this.image = entity.getImage();
-    }
 
     public int getId() {
         return id;

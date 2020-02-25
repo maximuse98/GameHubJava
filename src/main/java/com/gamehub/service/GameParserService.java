@@ -1,6 +1,6 @@
 package com.gamehub.service;
 
-import com.gamehub.model.*;
+import com.gamehub.entity.*;
 import org.json.simple.*;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -18,8 +18,8 @@ import java.util.*;
 
 @Service
 public class GameParserService {
-    private Game game;
-    private List<ImageResource> imageResources;
+    private GameEntity game;
+    private List<ImageResourceEntity> imageResources;
 
     public GameParserService() {
     }
@@ -36,7 +36,7 @@ public class GameParserService {
     }
 
     public void parseJSON(JSONObject jsonObject) {
-        this.game = new Game();
+        this.game = new GameEntity();
         game.setName((String) jsonObject.get("Name"));
         game.setPlayersCount(Math.toIntExact((Long) jsonObject.get("PlayersCount")));
         int startSceneId1 = Math.toIntExact((Long) jsonObject.get("StartSceneId1"));
@@ -44,16 +44,16 @@ public class GameParserService {
         game.setColorTheme((String) jsonObject.get("ColorTheme"));
 
         this.imageResources = new LinkedList<>();
-        List<Scene> scenes1 = new LinkedList<>();
+        List<SceneEntity> scenes1 = new LinkedList<>();
 
-        Set<Sprite> sprites1 = new HashSet<>();
-        Set<Choice> choices1 = new HashSet<>();
-        HashSet<Role> roles = new HashSet<>();
-        Set<MatrixVariant> choiceMatrix1 = new HashSet<>();
+        Set<SpriteEntity> sprites1 = new HashSet<>();
+        Set<ChoiceEntity> choices1 = new HashSet<>();
+        HashSet<RoleEntity> roles = new HashSet<>();
+        Set<MatrixVariantEntity> choiceMatrix1 = new HashSet<>();
 
         JSONArray jsonResources = (JSONArray) jsonObject.get("ImageResources");
         for (JSONObject resource : (Iterable<JSONObject>) jsonResources) {
-            ImageResource imageResource = new ImageResource();
+            ImageResourceEntity imageResource = new ImageResourceEntity();
             imageResource.setJsonId(Math.toIntExact((Long) resource.get("Id")));
             imageResource.setPath((String) resource.get("Path"));
             imageResources.add(imageResource);
@@ -61,7 +61,7 @@ public class GameParserService {
 
         JSONArray jsonRoles = (JSONArray) jsonObject.get("Roles");
         for (JSONObject jsonRole : (Iterable<JSONObject>) jsonRoles) {
-            Role role = new Role();
+            RoleEntity role = new RoleEntity();
             role.setGame(game);
             role.setName((String) jsonRole.get("Name"));
             roles.add(role);
@@ -70,7 +70,7 @@ public class GameParserService {
 
         JSONArray scenes = (JSONArray) jsonObject.get("Scenes");
         for (JSONObject next : (Iterable<JSONObject>) scenes) {
-            Scene scene = new Scene();
+            SceneEntity scene = new SceneEntity();
             scene.setJsonId(Math.toIntExact((Long) next.get("Id")));
             if (scene.getJsonId() == startSceneId1) {
                 game.setStartScene1(scene);
@@ -83,11 +83,11 @@ public class GameParserService {
             scene.setType((String) next.get("Type"));
 
             JSONArray sprites = (JSONArray) next.get("Sprites");
-            HashSet<Sprite> sceneSprites = new HashSet<>();
+            HashSet<SpriteEntity> sceneSprites = new HashSet<>();
             for (JSONObject next1 : (Iterable<JSONObject>) sprites) {
-                Sprite sprite = new Sprite();
+                SpriteEntity sprite = new SpriteEntity();
                 int resourceId = Math.toIntExact((Long) next1.get("ResourceId"));
-                for (ImageResource im : imageResources) {
+                for (ImageResourceEntity im : imageResources) {
                     if (resourceId == im.getJsonId()) {
                         sprite.setImageResource(im);
                     }
@@ -104,7 +104,7 @@ public class GameParserService {
             if (scene.getType().equals("Quest")) {
                 JSONArray choices = (JSONArray) next.get("Choices");
                 for (JSONObject next1 : (Iterable<JSONObject>) choices) {
-                    Choice choice = new Choice();
+                    ChoiceEntity choice = new ChoiceEntity();
                     //choice.setScene(scene);
                     //choice.setJsonId(Math.toIntExact((Long) next1.get("Id")));
                     choice.setCaption((String) next1.get("Caption"));
@@ -115,7 +115,7 @@ public class GameParserService {
 
                 JSONArray choiceMatrix = (JSONArray) next.get("ChoiceMatrix");
                 for (JSONObject next1 : (Iterable<JSONObject>) choiceMatrix) {
-                    MatrixVariant matrixVariant = new MatrixVariant();
+                    MatrixVariantEntity matrixVariant = new MatrixVariantEntity();
                     matrixVariant.setScene(scene);
                     matrixVariant.setMatrixPosition((String) next1.get("MatrixPosition"));
                     matrixVariant.setValue(Math.toIntExact((Long) next1.get("Value")));
@@ -126,15 +126,15 @@ public class GameParserService {
                 scene.setMatrixVariantList(choiceMatrix1);
             }
             int backgroundId = Math.toIntExact((Long) next.get("BackgroundId"));
-            for (ImageResource im : imageResources) {
+            for (ImageResourceEntity im : imageResources) {
                 if (backgroundId == im.getJsonId()) {
                     scene.setBackground(im);
                 }
             }
             scenes1.add(scene);
         }
-        for (MatrixVariant m: choiceMatrix1) {
-            for (Scene s: scenes1) {
+        for (MatrixVariantEntity m: choiceMatrix1) {
+            for (SceneEntity s: scenes1) {
                 if(s.getJsonId() == m.getNextSceneId1()){
                     m.setNextScene1(s);
                 }
@@ -143,9 +143,9 @@ public class GameParserService {
                 }
             }
         }
-        for (Scene s: scenes1) {
+        for (SceneEntity s: scenes1) {
             if (s.getType().equals("Normal")) {
-                for (Scene s1 : scenes1) {
+                for (SceneEntity s1 : scenes1) {
                     if (s1.getJsonId() == s.getNextSceneJsonId()) {
                         s.setNextScene(s1);
                     }
@@ -163,14 +163,14 @@ public class GameParserService {
             imgs.put(name, imageBytes);
         }
 
-        for (ImageResource resource:imageResources) {
+        for (ImageResourceEntity resource:imageResources) {
             byte[] image = imgs.get(resource.getPath());
             Blob im = new SerialBlob(image);
             resource.setImage(im);
         }
     }
 
-    public Game getGame() {
+    public GameEntity getGame() {
         return game;
     }
 }

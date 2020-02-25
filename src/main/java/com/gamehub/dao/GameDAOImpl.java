@@ -2,9 +2,9 @@ package com.gamehub.dao;
 
 import java.util.List;
 
-import com.gamehub.model.Choice;
-import com.gamehub.model.Game;
-import com.gamehub.model.MatrixVariant;
+import com.gamehub.entity.ChoiceEntity;
+import com.gamehub.entity.GameEntity;
+import com.gamehub.entity.MatrixVariantEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -20,56 +20,56 @@ public class GameDAOImpl implements GameDAO {
 		this.sessionFactory = sf;
 	}
 
-	public void addGame(Game p) {
+	public void addGame(GameEntity p) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.persist(p);
 		logger.info("Game saved successfully, Game Details="+p);
 	}
 
-	public void updateGame(Game p) {
+	public void updateGame(GameEntity p) {
 		Session session = this.sessionFactory.getCurrentSession();
 		session.update(p);
 		logger.info("Game updated successfully, Game Details="+p);
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<Game> listGames() {
+	public List<GameEntity> listGames() {
 		Session session = this.sessionFactory.getCurrentSession();
-		List<Game> personsList = session.createQuery("from Game").list();
-		for(Game p : personsList){
+		List<GameEntity> personsList = session.createQuery("from GameEntity").list();
+		for(GameEntity p : personsList){
 			logger.info("Person List::"+p);
 		}
 		return personsList;
 	}
 
-	public Game getGameById(int id) {
+	public GameEntity getGameById(int id) {
 		Session session = this.sessionFactory.getCurrentSession();
-		Game p = (Game) session.load(Game.class, id);
+		GameEntity p = (GameEntity) session.load(GameEntity.class, id);
 		logger.info("Game loaded successfully, Game details="+p);
 		return p;
 	}
 
 	public void removeGame(int id) {
 		Session session = this.sessionFactory.getCurrentSession();
-		Game p = (Game) session.load(Game.class, id);
+		GameEntity p = (GameEntity) session.load(GameEntity.class, id);
 		if(null != p){
 			session.delete(p);
 		}
 		logger.info("Game deleted successfully, game details="+p);
 	}
 
-    public void removeGame(Game game) {
+    public void removeGame(GameEntity game) {
         Session session = this.sessionFactory.getCurrentSession();
         session.delete(game);
     }
 
-	public Choice getChoiceById(int id) {
+	public ChoiceEntity getChoiceById(int id) {
 		Session session = this.sessionFactory.getCurrentSession();
-		return (Choice) session.load(Choice.class, id);
+		return (ChoiceEntity) session.load(ChoiceEntity.class, id);
 	}
 
-	public MatrixVariant getVariantByPosition(String position) {
+	public MatrixVariantEntity getVariantByPosition(String position) {
 		Session session = this.sessionFactory.getCurrentSession();
-		return (MatrixVariant) session.createQuery("from MatrixVariant where matrixPosition=position").list();
+		return (MatrixVariantEntity) session.createQuery("from MatrixVariantEntity where matrixPosition=position").list();
 	}
 }

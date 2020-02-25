@@ -1,22 +1,19 @@
 package com.gamehub.model;
 
-import javax.persistence.*;
+import com.gamehub.entity.ChoiceEntity;
 
-@Entity
-@Table(name = "choice")
 public class Choice {
 
-    @Id
-    @Column(name="id", updatable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "sceneId")
-    private Scene scene;
-
     private String caption;
     private int matrixNum;
+    private Scene scene;
+
+    public Choice(ChoiceEntity entity) {
+        this.id = entity.getId();
+        this.caption = entity.getCaption();
+        this.matrixNum = entity.getMatrixNum();
+    }
 
     public int getId() {
         return id;
@@ -34,14 +31,6 @@ public class Choice {
         this.caption = caption;
     }
 
-    public Scene getScene() {
-        return scene;
-    }
-
-    public void setScene(Scene scene) {
-        this.scene = scene;
-    }
-
     public int getMatrixNum() {
         return matrixNum;
     }
@@ -50,11 +39,18 @@ public class Choice {
         this.matrixNum = matrixNum;
     }
 
+    public Scene getScene() {
+        return scene;
+    }
+
+    public void setScene(Scene scene) {
+        this.scene = scene;
+    }
+
     @Override
     public String toString() {
         return "Choice{" +
                 "id=" + id +
-                ", scene=" + scene +
                 ", caption='" + caption + '\'' +
                 ", matrixNum='" + matrixNum +
                 '}';

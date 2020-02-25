@@ -1,53 +1,47 @@
 package com.gamehub.model;
 
+import com.gamehub.entity.ChoiceEntity;
+import com.gamehub.entity.MatrixVariantEntity;
+import com.gamehub.entity.SceneEntity;
+import com.gamehub.entity.SpriteEntity;
 import com.gamehub.view.ChoiceView;
 import com.gamehub.view.SceneView;
 import com.gamehub.view.View;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
-import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
-@Entity
-@Table(name = "scenes")
 public class Scene implements Model {
 
-    @Id
-    @Column(name="id", updatable = false)
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "backgroundId")
     private ImageResource background;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "nextSceneId")
     private Scene nextScene;
-
-    @OneToMany(mappedBy = "scene", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    private Set<Sprite> sprites;
-
-    @OneToMany(mappedBy = "scene", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    private Set<MatrixVariant> matrixVariantList;
-
-    @OneToMany(mappedBy = "scene", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    private Set<Choice> choices;
+    private List<Sprite> sprites;
+    private List<MatrixVariant> matrixVariantList;
+    private List<Choice> choices;
 
     private String text;
     private String type;
     private String speaker;
 
-    @Transient
-    private int jsonId;
-    @Transient
-    private int nextSceneJsonId;
+    public Scene(SceneEntity entity) {
+        this.id = entity.getId();
+        this.background = new ImageResource(entity.getBackground());
+        this.type = entity.getType();
+        this.text = entity.getText();
+        this.speaker = entity.getSpeaker();
+
+        setSprites(entity.getSprites());
+
+        if(type.equals("Normal")){
+            this.nextScene = new Scene(entity.getNextScene());
+        }
+        if(type.equals("Quest")){
+            setMatrixVariantList(entity.getMatrixVariantList());
+            setChoices(entity.getChoices());
+        }
+    }
 
     public int getId() {
         return id;
@@ -81,36 +75,39 @@ public class Scene implements Model {
         this.type = type;
     }
 
-    public void setMatrixVariantList(Set<MatrixVariant> matrixVariantList) {
-        this.matrixVariantList = matrixVariantList;
+    public void setMatrixVariantList(Set<MatrixVariantEntity> entityMatrixVariantList) {
+        matrixVariantList = new ArrayList<>(entityMatrixVariantList.size());
+        for (MatrixVariantEntity entityMatrixVariant: entityMatrixVariantList) {
+            matrixVariantList.add(new MatrixVariant(entityMatrixVariant));
+        }
     }
 
-    public Set<MatrixVariant> getMatrixVariantList() {
+    public List<MatrixVariant> getMatrixVariantList() {
         return matrixVariantList;
     }
 
-    public Set<Choice> getChoices() {
+    public List<Choice> getChoices() {
         return choices;
     }
 
-    public void setChoices(Set<Choice> choices) {
-        this.choices = choices;
+    public void setChoices(Set<ChoiceEntity> entityChoices) {
+        choices = new ArrayList<>(entityChoices.size());
+        for (ChoiceEntity choiceEntity: entityChoices) {
+            Choice choice = new Choice(choiceEntity);
+            choice.setScene(this);
+            choices.add(choice);
+        }
     }
 
-    public Set<Sprite> getSprites() {
+    public List<Sprite> getSprites() {
         return sprites;
     }
 
-    public void setSprites(Set<Sprite> sprites) {
-        this.sprites = sprites;
-    }
-
-    public int getJsonId() {
-        return jsonId;
-    }
-
-    public void setJsonId(int jsonId) {
-        this.jsonId = jsonId;
+    public void setSprites(Set<SpriteEntity> entitySprites) {
+        sprites = new ArrayList<>(entitySprites.size());
+        for (SpriteEntity entitySprite:entitySprites) {
+            sprites.add(new Sprite(entitySprite));
+        }
     }
 
     public Scene getNextScene() {
@@ -119,14 +116,6 @@ public class Scene implements Model {
 
     public void setNextScene(Scene nextScene) {
         this.nextScene = nextScene;
-    }
-
-    public int getNextSceneJsonId() {
-        return nextSceneJsonId;
-    }
-
-    public void setNextSceneJsonId(int nextSceneJsonId) {
-        this.nextSceneJsonId = nextSceneJsonId;
     }
 
     public String getSpeaker() {

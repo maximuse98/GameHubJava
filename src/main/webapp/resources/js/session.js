@@ -24,8 +24,9 @@ function splitText(txt, ids, speakers, sprts, bgr, sctp){
 
     lastSceneType =sctp;
 
-    nextPhrase();
+    i=0;
     setBackground(sceneIds[i]);
+    nextPhrase();
 }
 
 function nextPhrase(){
@@ -33,7 +34,7 @@ function nextPhrase(){
     speakerP.innerHTML = window.sceneSpeakers[i];
     window.sceneSpeakers[i] === "." ? speakerP.style.display = 'none' : speakerP.style.display = 'inline-block';
 
-    if( i!==0 && sceneBackgrounds[i-1] !== sceneBackgrounds[i]) {
+    if( i!==0 && sceneBackgrounds.length > 1 && sceneBackgrounds[i-1] !== sceneBackgrounds[i]) {
         setBackground(sceneIds[i]);
     }
     setSprites(sceneSprites[i], sceneIds[i]);

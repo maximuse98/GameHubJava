@@ -2,7 +2,12 @@ package com.gamehub.model;
 
 import com.gamehub.view.UserView;
 import com.gamehub.view.View;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.WebApplicationContext;
 
+@Component
+@Scope(WebApplicationContext.SCOPE_SESSION)
 public class User implements Model {
     private String name;
     private Scene scene;

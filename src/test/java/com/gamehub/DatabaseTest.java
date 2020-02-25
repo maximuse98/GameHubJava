@@ -1,12 +1,10 @@
 package com.gamehub;
 
 import com.gamehub.dao.GameDAO;
-import com.gamehub.model.Game;
-import com.gamehub.model.Scene;
+import com.gamehub.entity.GameEntity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +16,7 @@ import java.util.List;
         "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
 public class DatabaseTest {
     private GameDAO gameDAO;
-    private List<Game> games;
+    private List<GameEntity> games;
 
     @Autowired
     public void setGameDAO(GameDAO gameDAO) {
@@ -29,7 +27,7 @@ public class DatabaseTest {
     @Transactional
     public void getGames(){
         games = gameDAO.listGames();
-        for (Game game:games) {
+        for (GameEntity game:games) {
             System.out.println(game);
         }
     }
