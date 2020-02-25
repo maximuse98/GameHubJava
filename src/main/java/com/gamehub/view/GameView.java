@@ -1,10 +1,22 @@
 package com.gamehub.view;
 
-public class GameView {
+import com.gamehub.model.User;
+
+public class GameView implements View{
     private int id;
     private String name;
     private int playersCount;
     private String color;
+
+    public GameView() {
+    }
+
+    public GameView(int id, String name, int playersCount, String color) {
+        this.id = id;
+        this.name = name;
+        this.playersCount = playersCount;
+        this.color = color;
+    }
 
     public int getId() {
         return id;
@@ -36,5 +48,10 @@ public class GameView {
 
     public void setColour(String colour) {
         this.color = colour;
+    }
+
+    @Override
+    public View createByUser(User user) {
+        return user.getGameSession().getGame().createView();
     }
 }

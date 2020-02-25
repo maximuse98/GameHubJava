@@ -5,11 +5,11 @@ import com.gamehub.service.GameService;
 import com.gamehub.service.SessionService;
 import com.gamehub.service.UserService;
 import com.gamehub.view.GameView;
+import com.gamehub.view.SceneView;
 import com.gamehub.view.UserView;
 
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -34,19 +34,16 @@ public class GameController {
 	private static final String USER_SESSION_URL = "redirect:/game";
 
 	@Autowired
-	@Qualifier(value="userService")
 	public void setUserService(UserService us){
 		this.userService = us;
 	}
 	
 	@Autowired
-	@Qualifier(value="gameService")
 	public void setGameService(GameService gs){
 		this.gameService = gs;
 	}
 
 	@Autowired
-	@Qualifier(value = "sessionService")
 	public void setSessionService(SessionService sessionService) {
 		this.sessionService = sessionService;
 	}
@@ -117,12 +114,12 @@ public class GameController {
     @RequestMapping(value = "/game", method = RequestMethod.GET)
     public String getScene(Model model, Principal principal){
 		if(!sessionService.isUserExist(principal.getName())) return USER_MAIN_URL;
-        GameView gameView = sessionService.getGameView(principal.getName());
+        GameView gameView = (GameView) sessionService.getViewByUser(principal.getName(), new GameView());
 
-        model.addAttribute("scene", sessionService.getSceneView(principal.getName()));
+        model.addAttribute("scene", sessionService.getViewByUser(principal.getName(), new SceneView()));
         model.addAttribute("gameName", gameView.getName());
         model.addAttribute("gameColor",gameView.getColor());
-        model.addAttribute("userRole", "RoleExample");
+        //model.addAttribute("userRole", "RoleExample");
 
         return "session";
     }

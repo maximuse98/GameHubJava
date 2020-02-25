@@ -1,12 +1,18 @@
 package com.gamehub.model;
 
-public class User {
+import com.gamehub.view.UserView;
+import com.gamehub.view.View;
+
+public class User implements Model {
     private String name;
     private Scene scene;
     private GameSession gameSession;
     private Choice choice;
 
     private boolean isSceneReady = false;
+
+    public User() {
+    }
 
     public User(String name) {
         this.name = name;
@@ -56,5 +62,14 @@ public class User {
 
     public boolean isSceneReady() {
         return isSceneReady;
+    }
+
+    public View createView(){
+        UserView userView = new UserView();
+        userView.setUsername(name);
+        try {
+            userView.setCurrentGameName(gameSession.getGame().getName());
+        }catch (NullPointerException ignored){ }
+        return userView;
     }
 }

@@ -1,8 +1,5 @@
 package com.gamehub.model;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
 
 @Entity
@@ -15,7 +12,6 @@ public class Choice {
     private int id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "sceneId")
     private Scene scene;
 

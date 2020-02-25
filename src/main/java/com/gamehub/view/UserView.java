@@ -1,5 +1,6 @@
 package com.gamehub.view;
 
+import com.gamehub.model.User;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.Size;
@@ -14,7 +15,7 @@ import javax.validation.constraints.Size;
  *
  **/
 
-public class UserView {
+public class UserView implements View {
 
     @NotEmpty(message = "Login is required")
     private String username;
@@ -57,5 +58,10 @@ public class UserView {
 
     public void setCurrentGameName(String currentGameName) {
         this.currentGameName = currentGameName;
+    }
+
+    @Override
+    public View createByUser(User user) {
+        return user.createView();
     }
 }

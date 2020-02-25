@@ -1,49 +1,36 @@
 package com.gamehub.service;
 
 import com.gamehub.model.*;
-import com.gamehub.view.GameView;
-import com.gamehub.view.SceneView;
-import com.gamehub.view.SessionView;
-import com.gamehub.view.UserView;
+import com.gamehub.view.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.AsyncResult;
 
+import javax.inject.Provider;
 import java.sql.Blob;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Future;
 
 public class SessionService {
     private List<GameSession> sessions = new LinkedList<>();
     private List<User> users = new LinkedList<>();
 
-    private ViewService viewService;
     private GameService gameService;
 
     @Autowired
-    @Qualifier(value = "viewService")
-    public void setViewService(ViewService viewService) {
-        this.viewService = viewService;
-    }
-
-    @Autowired
-    @Qualifier(value = "gameService")
     public void setGameService(GameService gameService){
         this.gameService = gameService;
     }
 
-
     public void createSession(String username, Game game){
         if(isUserExist(username)) return;
         User user = new User(username, game.getStartScene1());
+        user.setName(username);
+        user.setScene(game.getStartScene1());
         users.add(user);
 
         GameSession session = new GameSession(game, user);
@@ -53,6 +40,7 @@ public class SessionService {
     public void addUserToSession(String username, int sessionId){
         if(isUserExist(username)) return;
         User user = new User(username);
+        user.setName(username);
         GameSession session = findSession(sessionId);
 
         if(session.isAvailable()) {
@@ -165,16 +153,22 @@ public class SessionService {
         throw new NullPointerException();
     }
 
-    public List<SessionView> getSessionViews() {
-        return viewService.createSessionViews(sessions);
+    public List<View> getSessionViews() {
+        return getViews(sessions);
     }
-    public List<UserView> getUserViews() {
-        return viewService.createUserViews(users);
+    public List<View> getUserViews() {
+        return getViews(users);
     }
-    public SceneView getSceneView(String username){
-        return viewService.createSceneView(findUser(username).getScene());
+
+    public View getViewByUser(String username, View view){
+        User user = findUser(username);
+        return view.createByUser(user);
     }
-    public GameView getGameView(String username){
-        return viewService.createGameView(findUser(username).getGameSession().getGame());
+    public List<View> getViews(List<? extends Model> models){
+        List<View> views = new ArrayList<>(models.size());
+        for (Model model:models) {
+            views.add(model.createView());
+        }
+        return views;
     }
 }

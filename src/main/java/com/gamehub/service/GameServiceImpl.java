@@ -1,5 +1,6 @@
 package com.gamehub.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.gamehub.dao.GameDAO;
@@ -7,23 +8,15 @@ import com.gamehub.model.Choice;
 import com.gamehub.model.Game;
 import com.gamehub.model.MatrixVariant;
 import com.gamehub.model.Scene;
-import com.gamehub.view.GameView;
-import org.springframework.stereotype.Service;
+import com.gamehub.view.View;
 import org.springframework.transaction.annotation.Transactional;
 
 
-@Service
 public class GameServiceImpl implements GameService {
-
 	private GameDAO gameDAO;
-	private ViewService viewService;
 
 	public void setGameDAO(GameDAO gameDAO) {
 		this.gameDAO = gameDAO;
-	}
-
-	public void setViewService(ViewService viewService) {
-		this.viewService = viewService;
 	}
 
 	@Transactional
@@ -69,8 +62,12 @@ public class GameServiceImpl implements GameService {
     }
 
     @Transactional
-    public List<GameView> getGameViews(){
+    public List<View> getGameViews(){
 		List<Game> games = this.gameDAO.listGames();
-		return viewService.createGameViews(games);
+		List<View> views = new ArrayList<>(games.size());
+		for (Game game:games) {
+			views.add(game.createView());
+		}
+		return views;
 	}
 }

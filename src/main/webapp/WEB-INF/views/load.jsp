@@ -12,11 +12,12 @@
 
     <title>GameHub Config</title>
 
-    <link rel="stylesheet" href="${contextPath}/resources/css/assets/demo.css">
-    <link rel="stylesheet" href="${contextPath}/resources/css/assets/header-login-signup.css">
-    <link href='http://fonts.googleapis.com/css?family=Cookie' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type='text/css' href="${contextPath}/resources/css/assets/demo.css">
+    <link rel="stylesheet" type='text/css' href="${contextPath}/resources/css/assets/header-login-signup.css">
+    <link rel='stylesheet' type='text/css' href='http://fonts.googleapis.com/css?family=Cookie'>
 
     <link rel="icon" type="image/png" href="${contextPath}/resources/imgs/icons/favicon.ico"/>
+
     <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="${contextPath}/resources/css/perfect-scrollbar.css">
@@ -96,6 +97,11 @@
             background: #109177;
         }
     </style>
+    <script type="application/javascript">
+        function load(){
+            document.getElementById("uploadForm").submit();
+        }
+    </script>
 </head>
 <body>
     <header class="header-login-signup">
@@ -143,14 +149,14 @@
                     </div>
                 </div>
             </c:if>
-            <form action="${pageContext.request.contextPath}/upload" class="form-style-5" method="POST" enctype="multipart/form-data">
+            <form id="uploadForm" action="${pageContext.request.contextPath}/upload" class="form-style-5" method="POST" enctype="multipart/form-data">
                 <table>
                     <tr>
                         <td>Load json:<input type="file" name="game"/>
                         <td>Load images:<input type="file" name="images" multiple="multiple" />
                         <td>
                             <div class="button_cont">
-                                <a class="example_b" type="submit" target="_blank" rel="nofollow noopener">Upload</a>
+                                <a class="example_b" onclick="load();" type="submit" target="_blank" rel="nofollow noopener">Upload</a>
                             </div>
                         </td>
                     </tr>

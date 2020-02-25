@@ -1,9 +1,11 @@
 package com.gamehub.view;
 
+import com.gamehub.model.User;
+
 import java.util.HashSet;
 import java.util.Set;
 
-public class SceneView {
+public class SceneView implements View {
     private String ids;
     private String speakers;
     private String sprites;
@@ -83,5 +85,10 @@ public class SceneView {
 
     public void setLastSceneType(String lastSceneType) {
         this.lastSceneType = lastSceneType;
+    }
+
+    @Override
+    public View createByUser(User user) {
+        return user.getScene().createView();
     }
 }

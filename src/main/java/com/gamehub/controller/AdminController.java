@@ -4,7 +4,6 @@ import com.gamehub.service.GameParserService;
 import com.gamehub.service.GameService;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +24,11 @@ public class AdminController {
     private static final String ADMIN_URL = "redirect:/upload";
 
     @Autowired
-    @Qualifier(value="gameService")
     public void setGameService(GameService gs){
         this.gameService = gs;
     }
 
     @Autowired
-    @Qualifier(value="gameParserService")
     public void setGameParserService(GameParserService ps){this.gameParserService = ps;}
 
 

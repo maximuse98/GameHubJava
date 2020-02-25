@@ -1,11 +1,21 @@
 package com.gamehub.view;
 
-public class SessionView {
+import com.gamehub.model.User;
+
+public class SessionView implements View {
     private int id;
     private String gameName;
     private String creatorUsername;
     private int gameSize;
     private int usersCount;
+
+    public SessionView(int id, String gameName, String creatorUsername, int gameSize, int usersCount) {
+        this.id = id;
+        this.gameName = gameName;
+        this.creatorUsername = creatorUsername;
+        this.gameSize = gameSize;
+        this.usersCount = usersCount;
+    }
 
     public int getId() {
         return id;
@@ -45,5 +55,10 @@ public class SessionView {
 
     public void setUsersCount(int usersCount) {
         this.usersCount = usersCount;
+    }
+
+    @Override
+    public View createByUser(User user) {
+        return user.getGameSession().createView();
     }
 }

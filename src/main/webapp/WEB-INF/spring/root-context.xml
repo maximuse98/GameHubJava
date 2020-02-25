@@ -56,14 +56,12 @@
 
 	<bean id="gameService" class="com.gamehub.service.GameServiceImpl">
 		<property name="gameDAO" ref="gameDAO"/>
-		<property name="viewService" ref="viewService" />
 	</bean>
 
 	<bean id="userService" class="com.gamehub.service.UserServiceImpl">
 		<property name="userDAO" ref="userDAO"/>
 	</bean>
 
-	<bean id="viewService" class="com.gamehub.service.ViewService"/>
 	<bean id="sessionService" class="com.gamehub.service.SessionService"/>
 	<bean id="gameParserService" class="com.gamehub.service.GameParserService"/>
 
@@ -71,12 +69,12 @@
 		<property name="userService" ref="userService"/>
 	</bean>
 
-	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+	<bean id="transactionManager1" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
 	</bean>
 
 	<bean id="bCryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
-	<tx:annotation-driven transaction-manager="transactionManager"/>
+	<tx:annotation-driven transaction-manager="transactionManager1"/>
 	<context:component-scan base-package="com.gamehub" />
 </beans>

@@ -4,12 +4,10 @@ import com.gamehub.entity.UserEntity;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Repository
 public class UserDAOImpl implements UserDAO {
     //private static final Logger logger = LoggerFactory.getLogger(GameDAOImpl.class);
 

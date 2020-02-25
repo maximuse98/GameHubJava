@@ -1,5 +1,7 @@
 package com.gamehub.model;
 
+import com.gamehub.view.GameView;
+import com.gamehub.view.View;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -8,7 +10,7 @@ import java.util.Set;
 
 @Entity
 @Table(name="games")
-public class Game {
+public class Game implements Model {
     @Id
     @Column(name="id", updatable = false)
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -18,12 +20,10 @@ public class Game {
     private String colorTheme;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "startSceneId1")
     private Scene startScene1;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "startSceneId2")
     private Scene startScene2;
 
@@ -79,10 +79,6 @@ public class Game {
         this.colorTheme = colourTheme;
     }
 
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
@@ -91,10 +87,15 @@ public class Game {
     public String toString() {
         return "Game{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + name +
                 ", playersCount=" + playersCount +
                 ", startScene1=" + startScene1 +
                 ", startScene2=" + startScene2 +
                 '}';
+    }
+
+    @Override
+    public View createView() {
+        return new GameView(id,name,playersCount,colorTheme);
     }
 }

@@ -1,5 +1,8 @@
 package com.gamehub.model;
 
+import com.gamehub.view.SessionView;
+import com.gamehub.view.View;
+
 import java.util.*;
 
 /**
@@ -28,7 +31,7 @@ import java.util.*;
  *
  **/
 
-public class GameSession {
+public class GameSession implements Model {
 
     private int id;
     private Game game;
@@ -112,11 +115,12 @@ public class GameSession {
         return game;
     }
 
-    public String getCreator() {
-        return creator.getName();
+    public User getCreator() {
+        return creator;
     }
 
-    public int getUsersCount(){
-        return users.size();
+    @Override
+    public View createView() {
+        return new SessionView(id,game.getName(),creator.getName(),game.getPlayersCount(),answeredCount);
     }
 }
