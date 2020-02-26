@@ -41,7 +41,7 @@ public class GameController {
 
 	@RequestMapping(value = {"/login", "/"})
 	public String loginPage(@RequestParam(value = "status", required = false) String status, Model model,Principal principal){
-	    if(principal != null) return USER_MAIN_URL;
+		if(principal != null) return USER_MAIN_URL;
 		if(status != null){
 			switch (status) {
 				case "created":
@@ -86,7 +86,7 @@ public class GameController {
 
 	@RequestMapping(value = "/games", method = RequestMethod.GET)
 	public String mainPage(Model model, Principal principal){
-		//if (sessionService.isUserExist(principal.getName())) return USER_SESSION_URL;
+		if (sessionService.isUserExist(principal.getName())) return USER_SESSION_URL;
 
 	    model.addAttribute("username", principal.getName());
 		model.addAttribute("listGames", gameService.getGameViews());

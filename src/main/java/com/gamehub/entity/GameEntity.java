@@ -1,6 +1,6 @@
 package com.gamehub.entity;
 
-import com.gamehub.view.GameView;
+import com.gamehub.model.Game;
 import com.gamehub.view.View;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -95,6 +95,6 @@ public class GameEntity {
     }
 
     public View createView() {
-        return new GameView(id,name,playersCount,colorTheme);
+        return new Game(this).createView();
     }
 }

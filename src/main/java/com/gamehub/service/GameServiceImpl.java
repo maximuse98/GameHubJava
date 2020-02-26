@@ -45,7 +45,6 @@ public class GameServiceImpl implements GameService {
 		this.gameDAO.removeGame(game);
 	}
 
-	@Transactional
     public Choice getChoice(Scene scene, int id) {
         while(!scene.getType().equals("Quest")){
         	scene = scene.getNextScene();

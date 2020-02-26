@@ -14,9 +14,8 @@ import java.util.List;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
         "file:src/main/webapp/WEB-INF/spring/root-context.xml"})
-public class DatabaseTest {
+public class GameEntityTest {
     private GameDAO gameDAO;
-    private List<GameEntity> games;
 
     @Autowired
     public void setGameDAO(GameDAO gameDAO) {
@@ -26,7 +25,7 @@ public class DatabaseTest {
     @Test
     @Transactional
     public void getGames(){
-        games = gameDAO.listGames();
+        List<GameEntity> games = gameDAO.listGames();
         for (GameEntity game:games) {
             System.out.println(game);
         }
@@ -34,7 +33,10 @@ public class DatabaseTest {
 
     @Test
     @Transactional
-    public void addGame(){
-
+    public void createGameViews(){
+        List<GameEntity> games = gameDAO.listGames();
+        for (GameEntity game:games) {
+            System.out.println(game.createView());
+        }
     }
 }
