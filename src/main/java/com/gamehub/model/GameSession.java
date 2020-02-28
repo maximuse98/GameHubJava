@@ -88,6 +88,10 @@ public class GameSession implements Model {
     }
 
     private void generateNextScenes(){
+        if(gameSize == 1) {
+            generateSingleScene();
+            return;
+        }
         String matrixPosition = "";
         for (User user: users) {
             matrixPosition = matrixPosition.concat(Integer.toString(user.getChoice().getMatrixNum()));
@@ -107,6 +111,18 @@ public class GameSession implements Model {
         }
     }
 
+    private void generateSingleScene(){
+        User user = users.iterator().next();
+        int matrixNum = user.getChoice().getMatrixNum();
+
+        List<MatrixVariant> matrixVariantList = user.getChoice().getScene().getMatrixVariantList();
+        for (MatrixVariant matrixVariant: matrixVariantList) {
+            if(matrixVariant.getMatrixPosition().equals(Integer.toString(matrixNum))){
+                user.setScene(matrixVariant.getNextScene1());
+            }
+        }
+    }
+
     public int getId() {
         return id;
     }
@@ -121,6 +137,6 @@ public class GameSession implements Model {
 
     @Override
     public View createView() {
-        return new SessionView(id,game.getName(),creator.getName(),game.getPlayersCount(),answeredCount);
+        return new SessionView(id,game.getName(),creator.getName(),game.getPlayersCount(),users.size()+answeredCount);
     }
 }

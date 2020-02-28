@@ -79,7 +79,7 @@
                             <tr class="row100 head">
                                 <th class="cell100 column4">Game Name</th>
                                 <th class="cell100 column5">Creator</th>
-                                <th class="cell100 column6">Players size</th>
+                                <th class="cell100 column6">Game size</th>
                                 <th class="cell100 column7">Current players</th>
                                 <th class="cell100 column8"></th>
                             </tr>

@@ -157,7 +157,9 @@ public class Scene implements Model {
             for(Sprite s: scene.getSprites()){
                 spriteIds = spriteIds.concat(s.getId() + ",");
             }
-            spriteIds = spriteIds.substring(0, spriteIds.length() - 1);
+            if(spriteIds.length()>0) {
+                spriteIds = spriteIds.substring(0, spriteIds.length() - 1);
+            }
             spriteIds = spriteIds.concat("|");
             if (scene.getType().equals("Quest")){
                 for (Choice choice:scene.getChoices()) {

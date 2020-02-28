@@ -37,7 +37,6 @@ function nextPhrase(){
     if( i!==0 && sceneBackgrounds.length > 1 && sceneBackgrounds[i-1] !== sceneBackgrounds[i]) {
         setBackground(sceneIds[i]);
     }
-    setSprites(sceneSprites[i], sceneIds[i]);
 
     if(window.text[i+1] === undefined){
         var choices = document.getElementById('choice').childNodes;
@@ -48,6 +47,9 @@ function nextPhrase(){
             var button = createExitButton();
             document.getElementById('choice').appendChild(button);
         }
+    }
+    if(sceneSprites[i] !== undefined) {
+        setSprites(sceneSprites[i], sceneIds[i]);
     }
     i++;
 }
@@ -69,9 +71,11 @@ function setSprites(sp,id) {
     }
     var sprites = sp.split(",");
     sprites.forEach(function (sprite) {
-        var img = document.createElement("img");
-        img.src = "/image/sprite?id=" + sprite + "&scene_id=" +id;
-        background.appendChild(img);
+        if(sprite !== "") {
+            var img = document.createElement("img");
+            img.src = "/image/sprite?id=" + sprite + "&scene_id=" + id;
+            background.appendChild(img);
+        }
     });
 }
 
@@ -95,6 +99,7 @@ function createExitButton() {
     exit.innerHTML = 'Finish game';
     exit.onclick = function () {
         window.location.href = '/leave';
+        window.close();
     };
     return exit;
 }

@@ -47,7 +47,7 @@
                 </c:forEach>
                 <div class="btn btn-success" id ="continue" onclick="nextPhrase();">Continue</div>
             </div>
-            <div class="closeIcon" onclick="window.location.href='/leave';"></div>
+            <div class="closeIcon" onclick="window.location.href='/leave'; window.close();"></div>
         </div>
     </body>
 </html>
