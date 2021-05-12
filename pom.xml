@@ -20,7 +20,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<org.springframework-version>4.0.3.RELEASE</org.springframework-version>
-		<spring.security-version>4.0.2.RELEASE</spring.security-version>
+		<spring.security-version>5.2.10.RELEASE</spring.security-version>
 	</properties>
 
 	<dependencies>
